@@ -100,7 +100,7 @@ public class Tokenizer
                 i += parseWord(line.substring(i, length));
             }
 
-            if (Character.isDigit(line.charAt(i)) || ((i != (length-1) && line.charAt(i) == '.') && Character.isDigit(line.charAt(i+1))))
+            if (Character.isDigit(line.charAt(i)) || (line.charAt(i) == '.'))
             {
                 i += parseNum(line.substring(i, length));
             }
@@ -175,25 +175,52 @@ public class Tokenizer
         int i = 0;
         int length = substring.length();
         boolean isReal = false;
+        boolean isDelimiter = false;
 
         //Extraction
         for (;i < length; i++)
         {
-            if(!(Character.isDigit(substring.charAt(i)) || (substring.charAt(i) == '.' && !isReal)))
-            {
-                break;
-            }
+            if(Character.isDigit(substring.charAt(0))) {
+                if(!(Character.isDigit(substring.charAt(i)) || (substring.charAt(i) == '.' && !isReal)))
+                {
+                    break;
+                }
 
-            if(substring.charAt(i) == '.') isReal = true;
-            sb.append(substring.charAt(i));
+                if(substring.charAt(i) == '.') isReal = true;
+                sb.append(substring.charAt(i));
+            }
+            else {
+                
+                if(!isReal) {
+                    if((((i + 1) != length) && Character.isDigit(substring.charAt(i+1)))) isReal = true;
+                    else {
+                        isDelimiter = true;
+                        i++;
+                        sb.append(substring.charAt(0));
+                        break;
+                    }
+
+                    sb.append(substring.charAt(0));
+                    i++;
+                }
+
+                if(!(Character.isDigit(substring.charAt(i)) || (substring.charAt(i) == '.' && !isReal)))
+                {
+                    break;
+                }
+
+                sb.append(substring.charAt(i));   
+            }
         }
 
         //Classification
         if(isReal) {
             tokens.add(new Token(sb.toString(), Token.Classifications.REAL, lineNum));
+        } else if(isDelimiter){
+            tokens.add(new Token(sb.toString(), Token.Classifications.DELIMITER, lineNum));
         } else {
             tokens.add(new Token(sb.toString(), Token.Classifications.INTEGER, lineNum));
-        } 
+        }
 
         return (i == length)? length-1 : (i-1);
     }
