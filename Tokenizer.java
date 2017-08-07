@@ -80,7 +80,7 @@ public class Tokenizer
 
         for (;i < length; i++)
         {
-            if(!Character.isLetterOrDigit(substring.charAt(i)))
+            if(!(Character.isLetterOrDigit(substring.charAt(i)) || substring.charAt(i) == '_'))
             {
                 break;
             }
