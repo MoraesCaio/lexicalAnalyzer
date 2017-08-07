@@ -33,6 +33,7 @@ public class Tokenizer
         {
             if (line.isEmpty())
             {
+                lineNum += 1;
                 continue;
             }
             parseLine(line);
@@ -87,13 +88,13 @@ public class Tokenizer
         }
 
         if(Token.keywords.contains(sb.toString().toLowerCase())) {
-            tokens.add(new Token(sb.toString(), Token.Classifications.KEYWORD, lineNum));
+            tokens.add(new Token(sb.toString(), Token.Classifications.KEYWORD, lineNum+1));
         } else if(sb.toString().toLowerCase().equals(Token.addOP)){
-            tokens.add(new Token(sb.toString(), Token.Classifications.ADDITION, lineNum));
+            tokens.add(new Token(sb.toString(), Token.Classifications.ADDITION, lineNum+1));
         } else if(sb.toString().toLowerCase().equals(Token.multOP)){
-            tokens.add(new Token(sb.toString(), Token.Classifications.MULTIPLICATION, lineNum));
+            tokens.add(new Token(sb.toString(), Token.Classifications.MULTIPLICATION, lineNum+1));
         } else {
-            tokens.add(new Token(sb.toString(), Token.Classifications.IDENTIFIER, lineNum));
+            tokens.add(new Token(sb.toString(), Token.Classifications.IDENTIFIER, lineNum+1));
         }
 
         return (i == length)? length-1 : i;
