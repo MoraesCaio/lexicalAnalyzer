@@ -27,6 +27,7 @@ public class Token {
     final static public List<String> keywords = Arrays.asList("program", "var", "integer", "real", "boolean", "procedure", "begin", "end", "if", "then", "else", "while", "do", "not");
     final static public String addOP = "or";
     final static public String multOP = "and";
+    final static public String accChars = "_.:;,<>=+-/*(){} \t\n";
 
 
     /**

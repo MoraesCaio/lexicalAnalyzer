@@ -24,7 +24,6 @@ public class Tokenizer
 
     private Integer lineNum;
     private boolean onComment = false;
-    private int openParenthesis = 0;
 
 
     /*STRINGBUILDER*/
@@ -183,6 +182,15 @@ public class Tokenizer
     }
 
 
-
-    //private boolean isAcceptedChar(){}
+    /**
+     * Checks if an character it's an allowed character or not.
+     * @param c Character being evaluated.
+     * @return boolean - true, if it's an accepted character; false, otherwise.
+     */
+    private boolean isAllowedChar(char c)
+    {
+        if(Character.isLetterOrDigit(c)) return true;
+        if(Token.accChars.indexOf(c) != -1) return true;
+        return false;
+    }
 }
