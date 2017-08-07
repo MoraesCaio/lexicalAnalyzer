@@ -3,6 +3,8 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 /**
+ * This is a lexical analyzer for Pascal. It was created as experience for a better compiler's comprehension.
+ *
  * Created on 06/08/17 by
  *
  * Caio Moraes
@@ -13,6 +15,7 @@ import java.util.Scanner;
  * GitHub: janyelson
  * Email: janyelsonvictor@gmail.com
  */
+
 public class Test
 {
     public static void main(String[] args)

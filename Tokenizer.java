@@ -2,19 +2,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by caiomoraes on 06/08/17.
+ * This is a parser of List<String> to List<Token>. To make good use of it, simply instantiate it, call parse() and
+ * access the List<Token> tokens.
+ *
+ * Created on 06/08/17 by
+ *
+ * Caio Moraes
+ * GitHub: MoraesCaio
+ * Email: caiomoraes
+ *
+ * Janyelson Oliveira
+ * GitHub: janyelson
+ * Email: janyelsonvictor@gmail.com
  */
+
 public class Tokenizer
 {
+    /*PROPERTIES*/
     public List<String> lines;
     public List<Token> tokens;
 
     private Integer lineNum;
-    private StringBuilder sb;
     private boolean onComment = false;
     private int openParenthesis = 0;
 
-    /*CONSTRUCTOR*/
+
+    /*STRINGBUILDER*/
+    private StringBuilder sb;
+
+
+    /**
+     * CONSTRUCTOR
+     * @param lines Lines read from the source code file.
+     * @throws IllegalArgumentException
+     */
     public Tokenizer(List<String> lines) throws IllegalArgumentException
     {
         if(lines == null)
@@ -27,8 +48,13 @@ public class Tokenizer
         this.lineNum = 0;
     }
 
+
+    /**
+     * Main method. Iterates through the lines of source code whilst parsing.
+     */
     public void parse()
     {
+        //Parsing
         for (String line : lines)
         {
             if (line.isEmpty())
@@ -39,6 +65,7 @@ public class Tokenizer
             parseLine(line);
             lineNum += 1;
         }
+        //Printing
         for (Token token : tokens)
         {
             System.out.println(token);
@@ -46,9 +73,14 @@ public class Tokenizer
         }
     }
 
+
+    /**
+     * Parse the line into tokens and classifies them with the classes in Enum Token.Classifications.
+     * Blank spaces and comments will be ignored.
+     * @param line line that will be parsed.
+     */
     private void parseLine(String line)
     {
-        Token tempToken;
         sb = new StringBuilder();
 
         int length = line.length();
@@ -60,7 +92,7 @@ public class Tokenizer
                 onComment = true;
                 i += parseComment(line.substring(i, length));
                 if(onComment) continue;
-                System.out.println("end char: " + line.charAt(i));
+                //System.out.println("end char: " + line.charAt(i));
             }
 
             //Words
@@ -72,35 +104,12 @@ public class Tokenizer
         }
     }
 
-    private int parseWord(String substring)
-    {
-        int length = substring.length();
-        sb = new StringBuilder();
-        int i = 0;
 
-        for (;i < length; i++)
-        {
-            if(!(Character.isLetterOrDigit(substring.charAt(i)) || substring.charAt(i) == '_'))
-            {
-                break;
-            }
-            sb.append(substring.charAt(i));
-        }
-
-        if(Token.keywords.contains(sb.toString().toLowerCase())) {
-            tokens.add(new Token(sb.toString(), Token.Classifications.KEYWORD, lineNum+1));
-        } else if(sb.toString().toLowerCase().equals(Token.addOP)){
-            tokens.add(new Token(sb.toString(), Token.Classifications.ADDITION, lineNum+1));
-        } else if(sb.toString().toLowerCase().equals(Token.multOP)){
-            tokens.add(new Token(sb.toString(), Token.Classifications.MULTIPLICATION, lineNum+1));
-        } else {
-            tokens.add(new Token(sb.toString(), Token.Classifications.IDENTIFIER, lineNum+1));
-        }
-
-        return (i == length)? length-1 : i;
-    }
-    //private int parseNum(String substring){}
-    //private int parseExtras(String substring){}
+    /**
+     * Ignores the comments.
+     * @param substring Part of the line that is not parsed yet.
+     * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
+     */
     private int parseComment(String substring)
     {
         int length = substring.length();
@@ -115,4 +124,65 @@ public class Tokenizer
         return length-1;
     }
 
+
+    /**
+     * Parses identifiers and keywords. Format: [Aa..Zz] ([0..9] | '_' | [Aa..Zz))*
+     * @param substring Part of the line that is not parsed yet.
+     * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
+     */
+    private int parseWord(String substring)
+    {
+        sb = new StringBuilder();
+        int i = 0;
+        int length = substring.length();
+
+        //Extraction
+        for (;i < length; i++)
+        {
+            if(!(Character.isLetterOrDigit(substring.charAt(i)) || substring.charAt(i) == '_'))
+            {
+                break;
+            }
+            sb.append(substring.charAt(i));
+        }
+
+        //Classification
+        if(Token.keywords.contains(sb.toString().toLowerCase())) {
+            tokens.add(new Token(sb.toString(), Token.Classifications.KEYWORD, lineNum));
+        } else if(sb.toString().toLowerCase().equals(Token.addOP)){
+            tokens.add(new Token(sb.toString(), Token.Classifications.ADDITION, lineNum));
+        } else if(sb.toString().toLowerCase().equals(Token.multOP)){
+            tokens.add(new Token(sb.toString(), Token.Classifications.MULTIPLICATION, lineNum));
+        } else {
+            tokens.add(new Token(sb.toString(), Token.Classifications.IDENTIFIER, lineNum));
+        }
+
+        return (i == length)? length-1 : i;
+    }
+
+
+    /**
+     * Parse numbers: reals and integers.
+     * @param substring Part of the line that is not parsed yet.
+     * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
+     */
+    private int parseNum(String substring)
+    {
+        return 0;
+    }
+
+
+    /**
+     * Parse other symbols: _.:;,<>=+-/*()
+     * @param substring Part of the line that is not parsed yet.
+     * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
+     */
+    private int parseExtras(String substring)
+    {
+        return 0;
+    }
+
+
+
+    //private boolean isAcceptedChar(){}
 }
