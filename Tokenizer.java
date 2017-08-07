@@ -100,6 +100,10 @@ public class Tokenizer
                 i += parseWord(line.substring(i, length));
             }
 
+            if (Character.isDigit(line.charAt(i)) || ((i != (length-1) && line.charAt(i) == '.') && Character.isDigit(line.charAt(i+1))))
+            {
+                i += parseNum(line.substring(i, length));
+            }
         }
     }
 
@@ -167,7 +171,31 @@ public class Tokenizer
      */
     private int parseNum(String substring)
     {
-        return 0;
+        sb = new StringBuilder();
+        int i = 0;
+        int length = substring.length();
+        boolean isReal = false;
+
+        //Extraction
+        for (;i < length; i++)
+        {
+            if(!(Character.isDigit(substring.charAt(i)) || (substring.charAt(i) == '.' && !isReal)))
+            {
+                break;
+            }
+
+            if(substring.charAt(i) == '.') isReal = true;
+            sb.append(substring.charAt(i));
+        }
+
+        //Classification
+        if(isReal) {
+            tokens.add(new Token(sb.toString(), Token.Classifications.REAL, lineNum));
+        } else {
+            tokens.add(new Token(sb.toString(), Token.Classifications.INTEGER, lineNum));
+        } 
+
+        return (i == length)? length-1 : (i-1);
     }
 
 
@@ -178,6 +206,7 @@ public class Tokenizer
      */
     private int parseExtras(String substring)
     {
+
         return 0;
     }
 
