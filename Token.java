@@ -8,9 +8,10 @@ public class Token {
     public String token;
     public Integer lineNumber;
     public String classification;
-    final public List<String> keywords = Arrays.asList("program", "var", "integer", "real", "boolean", "procedure", "begin", "end", "if", "then", "else", "while", "do", "not");
-    final public String addOP = "or";
-    final public String multOP = "and";
+
+    final static public List<String> keywords = Arrays.asList("program", "var", "integer", "real", "boolean", "procedure", "begin", "end", "if", "then", "else", "while", "do", "not");
+    final static public String addOP = "or";
+    final static public String multOP = "and";
 
     /*CONSTRUCTORS*/
     public Token(String token, String classification, Integer lineNumber)

@@ -12,7 +12,7 @@ public class Tokenizer
     private Integer lineNum;
     private StringBuilder sb;
     private boolean onComment = false;
-    private boolean onString = false;
+    private int openParenthesis = 0;
 
     /*CONSTRUCTOR*/
     public Tokenizer(List<String> lines) throws IllegalArgumentException
@@ -38,6 +38,11 @@ public class Tokenizer
             parseLine(line);
             lineNum += 1;
         }
+        for (Token token : tokens)
+        {
+            System.out.println(token);
+            System.out.println();
+        }
     }
 
     private void parseLine(String line)
@@ -53,13 +58,46 @@ public class Tokenizer
             {
                 onComment = true;
                 i += parseComment(line.substring(i, length));
+                if(onComment) continue;
                 System.out.println("end char: " + line.charAt(i));
+            }
+
+            //Words
+            if (Character.isLetter(line.charAt(i)))
+            {
+                i += parseWord(line.substring(i, length));
             }
 
         }
     }
 
-    //private int parseIdOrKey(String substring){}
+    private int parseWord(String substring)
+    {
+        int length = substring.length();
+        sb = new StringBuilder();
+        int i = 0;
+
+        for (;i < length; i++)
+        {
+            if(!Character.isLetterOrDigit(substring.charAt(i)))
+            {
+                break;
+            }
+            sb.append(substring.charAt(i));
+        }
+
+        if(Token.keywords.contains(sb.toString().toLowerCase())) {
+            tokens.add(new Token(sb.toString(), Token.Classifications.KEYWORD, lineNum));
+        } else if(sb.toString().toLowerCase().equals(Token.addOP)){
+            tokens.add(new Token(sb.toString(), Token.Classifications.ADDITION, lineNum));
+        } else if(sb.toString().toLowerCase().equals(Token.multOP)){
+            tokens.add(new Token(sb.toString(), Token.Classifications.MULTIPLICATION, lineNum));
+        } else {
+            tokens.add(new Token(sb.toString(), Token.Classifications.IDENTIFIER, lineNum));
+        }
+
+        return (i == length)? length-1 : i;
+    }
     //private int parseNum(String substring){}
     //private int parseExtras(String substring){}
     private int parseComment(String substring)
