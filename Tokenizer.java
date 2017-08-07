@@ -186,7 +186,12 @@ public class Tokenizer
                     break;
                 }
 
-                if(substring.charAt(i) == '.') isReal = true;
+                if(substring.charAt(i) == '.') {
+                    if(((i + 1) != length)  && Character.isDigit(substring.charAt(i+1))) isReal = true;
+                    else {
+                        break;
+                    } 
+                } 
                 sb.append(substring.charAt(i));
             }
             else {
