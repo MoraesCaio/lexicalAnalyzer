@@ -108,7 +108,7 @@ public class Tokenizer
 
             //Extras
             //All specialChars except for ".{}", as they were parsed before
-            if (Token.specialChars.replaceAll("[.{}]","").indexOf(line.charAt(i)) != -1)
+            if (Token.specialChars.replaceAll("[.{}_]","").indexOf(line.charAt(i)) != -1)
             {
                 i += parseExtras(line. substring(i));
             }
@@ -255,7 +255,7 @@ public class Tokenizer
 
 
     /**
-     * Parse other symbols: _.:;,<>=+-/*()
+     * Parse other symbols: .:;,<>=+-/*()
      * @param substring Part of the line that is not parsed yet.
      * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
      */
@@ -313,8 +313,6 @@ public class Tokenizer
     {
         return Character.isLetterOrDigit(c) && Token.accChars.indexOf(c) != -1;
     }
-
-
     private boolean isLastChar(int idx, int length) {
         return idx+1 == length;
     }
