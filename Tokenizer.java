@@ -100,6 +100,7 @@ public class Tokenizer
                 i += parseWord(line.substring(i, length));
             }
 
+            //Numbers
             if (Character.isDigit(line.charAt(i)) || (line.charAt(i) == '.'))
             {
                 i += parseNum(line.substring(i, length));
@@ -116,7 +117,7 @@ public class Tokenizer
     private int parseComment(String substring)
     {
         int length = substring.length();
-        System.out.println("first char: " + substring.charAt(0));
+        //System.out.println("first char: " + substring.charAt(0));
         for(int i = 0; i < length; i++)
         {
             if(substring.charAt(i) == '}'){
@@ -174,31 +175,46 @@ public class Tokenizer
         sb = new StringBuilder();
         int i = 0;
         int length = substring.length();
-        boolean isReal = false;
+        boolean startsWithDigit = Character.isDigit(substring.charAt(0)); //startsWithDigit != startsWithADot
+        boolean isReal = false; //flag indicating that there's already a dot, prevents 0.0(.0)+ from being parse as real
         boolean isDelimiter = false;
 
         //Extraction
-        for (;i < length; i++)
+        if(startsWithDigit)
         {
-            if(Character.isDigit(substring.charAt(0))) {
-                if(!(Character.isDigit(substring.charAt(i)) || (substring.charAt(i) == '.' && !isReal)))
+            for (; i < length; i++)
+            {
+                if (!Character.isDigit(substring.charAt(i)) && (substring.charAt(i) != '.' || isReal))
                 {
                     break;
                 }
 
-                if(substring.charAt(i) == '.') {
-                    if(((i + 1) != length)  && Character.isDigit(substring.charAt(i+1))) isReal = true;
-                    else {
+                if (substring.charAt(i) == '.')
+                {
+                    //First dot
+                    if (nextCharIsDigit(i, substring))
+                        isReal = true;
+                    else
                         break;
-                    } 
-                } 
+                }
+
                 sb.append(substring.charAt(i));
             }
-            else {
-                
-                if(!isReal) {
-                    if((((i + 1) != length) && Character.isDigit(substring.charAt(i+1)))) isReal = true;
-                    else {
+        }
+        //startsWithADot
+        else
+        {
+            for (; i < length; i++)
+            {
+                //Prevents 0.0(.0)+ from being parsed as real
+                if (!isReal)
+                {
+                    if (nextCharIsDigit(i, substring))
+                    {
+                        isReal = true;
+                    }
+                    else
+                    {
                         isDelimiter = true;
                         i++;
                         sb.append(substring.charAt(0));
@@ -209,12 +225,12 @@ public class Tokenizer
                     i++;
                 }
 
-                if(!(Character.isDigit(substring.charAt(i)) || (substring.charAt(i) == '.' && !isReal)))
+                if(!Character.isDigit(substring.charAt(i)) && (substring.charAt(i) != '.' || isReal))
                 {
                     break;
                 }
 
-                sb.append(substring.charAt(i));   
+                sb.append(substring.charAt(i));
             }
         }
 
@@ -253,5 +269,15 @@ public class Tokenizer
         if(Character.isLetterOrDigit(c)) return true;
         if(Token.accChars.indexOf(c) != -1) return true;
         return false;
+    }
+
+
+    private boolean isLastChar(int idx, int length) {
+        return idx+1 == length;
+    }
+    private boolean nextCharIsDigit(int idx, String substring)
+    {
+        return !isLastChar(idx, substring.length()) &&
+                Character.isDigit(substring.charAt(idx+1)) ;
     }
 }
