@@ -24,6 +24,7 @@ public class Tokenizer
 
     private Integer lineNum;
     private boolean onComment = false;
+    private boolean onString = false;
 
 
     /*STRINGBUILDER*/
@@ -85,25 +86,39 @@ public class Tokenizer
         int length = line.length();
         for (int i = 0; i < length; i++)
         {
+        	boolean isAllowedChar = false;
             //Comments
             if ((!onComment && line.charAt(i) == '{') || onComment)
             {
                 onComment = true;
                 i += parseComment(line.substring(i, length));
+                isAllowedChar = true;
                 if(onComment) continue;
                 //System.out.println("end char: " + line.charAt(i));
             }
 
+            //Strings
+            if ((!onString && line.charAt(i) == '\'') || onString)
+            {
+                onString = true;
+                i += parseString(line.substring(i, length));
+                isAllowedChar = true;
+                if(onString) continue;
+                //System.out.println("end char: " + line.charAt(i));
+            }
+
             //Words
-            if (Character.isLetter(line.charAt(i)))
+            if (isLetter(line.charAt(i)))
             {
                 i += parseWord(line.substring(i, length));
+                isAllowedChar = true;
             }
 
             //Numbers
             if (Character.isDigit(line.charAt(i)) || (line.charAt(i) == '.'))
             {
                 i += parseNum(line.substring(i, length));
+                isAllowedChar = true;
             }
 
             //Extras
@@ -111,6 +126,11 @@ public class Tokenizer
             if (Token.specialChars.replaceAll("[.{}_]","").indexOf(line.charAt(i)) != -1)
             {
                 i += parseExtras(line. substring(i));
+                isAllowedChar = true;
+            }
+
+            if(!isAllowedChar && !(Character.isWhitespace(line.charAt(i)))) {
+            	System.out.println("Character not allowed (line" + lineNum +"): " + line.charAt(i));
             }
         }
     }
@@ -135,6 +155,25 @@ public class Tokenizer
         return length-1;
     }
 
+    /**
+     * Ignores the strings.
+     * @param substring Part of the line that is not parsed yet.
+     * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
+     */
+    private int parseString(String substring)
+    {
+        int length = substring.length();
+        //System.out.println("first char: " + substring.charAt(0));
+        for(int i = 1; i < length; i++)
+        {
+            if(substring.charAt(i) == '\''){
+                onString = false;
+                return i;
+            }
+        }
+        return length-1;
+    }
+
 
     /**
      * Parses identifiers and keywords. Format: [Aa..Zz] ([0..9] | '_' | [Aa..Zz))*
@@ -150,7 +189,7 @@ public class Tokenizer
         //Extraction
         for (;i < length; i++)
         {
-            if(!(Character.isLetterOrDigit(substring.charAt(i)) || substring.charAt(i) == '_'))
+            if(!(isLetterOrDigit(substring.charAt(i)) || substring.charAt(i) == '_'))
             {
                 break;
             }
@@ -331,4 +370,10 @@ public class Tokenizer
         return !isLastChar(idx, substring.length()) &&
                 chars.indexOf(substring.charAt(idx+1)) != -1;
     }
+    private boolean isLetter(char c) {
+    	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+	}
+	private boolean isLetterOrDigit(char c) {
+    	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
+	}
 }
