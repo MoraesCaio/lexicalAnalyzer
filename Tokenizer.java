@@ -105,6 +105,13 @@ public class Tokenizer
             {
                 i += parseNum(line.substring(i, length));
             }
+
+            //Extras
+            //All specialChars except for ".{}", as they were parsed before
+            if (Token.specialChars.replaceAll("[.{}]","").indexOf(line.charAt(i)) != -1)
+            {
+                i += parseExtras(line. substring(i));
+            }
         }
     }
 
@@ -216,8 +223,8 @@ public class Tokenizer
                     else
                     {
                         isDelimiter = true;
-                        i++;
                         sb.append(substring.charAt(0));
+                        i++;
                         break;
                     }
 
@@ -254,8 +261,46 @@ public class Tokenizer
      */
     private int parseExtras(String substring)
     {
-
-        return 0;
+        sb = new StringBuilder();
+        Token.Classifications tempClassif = Token.Classifications.DELIMITER;
+        int i = 0;
+        sb.append(substring.charAt(0));
+        switch(substring.charAt(0))
+        {
+            case '<':
+                tempClassif = Token.Classifications.RELATIONAL;
+                if (nextCharIsIn(i, substring, ">=")){
+                    sb.append(substring.charAt(++i));
+                }
+                break;
+            case '>':
+                tempClassif = Token.Classifications.RELATIONAL;
+                if (nextCharEquals(i, substring, '=')){
+                    sb.append(substring.charAt(++i));
+                }
+                break;
+            case '=':
+                tempClassif = Token.Classifications.RELATIONAL;
+                break;
+            case ':':
+                tempClassif = Token.Classifications.DELIMITER;
+                if (nextCharEquals(i, substring, '=')){
+                    sb.append(substring.charAt(++i));
+                    tempClassif = Token.Classifications.ASSIGNMENT;
+                }
+                break;
+            case ',': case ';': case '(': case ')':
+                tempClassif = Token.Classifications.DELIMITER;
+                break;
+            case '+': case '-':
+                tempClassif = Token.Classifications.ADDITION;
+                break;
+            case '*': case '/':
+                tempClassif = Token.Classifications.MULTIPLICATION;
+                break;
+        }
+        tokens.add(new Token(sb.toString(), tempClassif, lineNum));
+        return i;
     }
 
 
@@ -266,9 +311,7 @@ public class Tokenizer
      */
     private boolean isAllowedChar(char c)
     {
-        if(Character.isLetterOrDigit(c)) return true;
-        if(Token.accChars.indexOf(c) != -1) return true;
-        return false;
+        return Character.isLetterOrDigit(c) && Token.accChars.indexOf(c) != -1;
     }
 
 
@@ -278,6 +321,16 @@ public class Tokenizer
     private boolean nextCharIsDigit(int idx, String substring)
     {
         return !isLastChar(idx, substring.length()) &&
-                Character.isDigit(substring.charAt(idx+1)) ;
+                Character.isDigit(substring.charAt(idx+1));
+    }
+    private boolean nextCharEquals(int idx, String substring, char c)
+    {
+        return !isLastChar(idx, substring.length()) &&
+                substring.charAt(idx+1) == c;
+    }
+    private boolean nextCharIsIn(int idx, String substring, String chars)
+    {
+        return !isLastChar(idx, substring.length()) &&
+                chars.indexOf(substring.charAt(idx+1)) != -1;
     }
 }

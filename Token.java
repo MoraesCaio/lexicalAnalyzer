@@ -28,6 +28,7 @@ public class Token {
     final static public String addOP = "or";
     final static public String multOP = "and";
     final static public String accChars = "_.:;,<>=+-/*(){} \t\n";
+    final static public String specialChars = "_.:;,<>=+-/*(){}";
 
 
     /**
