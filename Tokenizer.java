@@ -104,7 +104,6 @@ public class Tokenizer
                 i += parseString(line.substring(i, length));
                 isAllowedChar = true;
                 if(onString) continue;
-                //System.out.println("end char: " + line.charAt(i));
             }
 
             //Words
@@ -112,6 +111,7 @@ public class Tokenizer
             {
                 i += parseWord(line.substring(i, length));
                 isAllowedChar = true;
+                continue;
             }
 
             //Numbers
@@ -119,6 +119,7 @@ public class Tokenizer
             {
                 i += parseNum(line.substring(i, length));
                 isAllowedChar = true;
+                continue;
             }
 
             //Extras
@@ -127,6 +128,7 @@ public class Tokenizer
             {
                 i += parseExtras(line. substring(i));
                 isAllowedChar = true;
+                continue;
             }
 
             if(!isAllowedChar && !(Character.isWhitespace(line.charAt(i)))) {
@@ -207,7 +209,7 @@ public class Tokenizer
             tokens.add(new Token(sb.toString(), Token.Classifications.IDENTIFIER, lineNum));
         }
 
-        return (i == length)? length-1 : i;
+        return (i == length)? length-1 : (i-1);
     }
 
 
