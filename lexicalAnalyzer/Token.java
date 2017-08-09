@@ -20,17 +20,17 @@ import java.util.List;
 public class Token {
 
     /*PROPERTIES*/
-    public String token;
-    public Integer lineNumber;
-    public String classification;
+    private String token;
+    private Integer lineNumber;
+    private String classification;
 
 
     /*VALUES*/
-    final static public List<String> keywords = Arrays.asList("program", "var", "integer", "real", "boolean", "procedure", "begin", "end", "if", "then", "else", "while", "do", "not");
-    final static public String addOP = "or";
-    final static public String multOP = "and";
-    final static public String accChars = "_.:;,<>=+-/*(){}\' \t\n";
-    final static public String specialChars = "_.:;,<>=+-/*(){}";
+    final static List<String> keywords = Arrays.asList("program", "var", "integer", "real", "boolean", "procedure", "begin", "end", "if", "then", "else", "while", "do", "not");
+    final static String addOP = "or";
+    final static String multOP = "and";
+    final static String accChars = "_.:;,<>=+-/*(){}\' \t\n";
+    final static String specialChars = "_.:;,<>=+-/*(){}";
 
 
     /**
@@ -39,14 +39,14 @@ public class Token {
      * @param classification Classification of the token.
      * @param lineNumber Number of the line where the token was found.
      */
-    public Token(String token, String classification, Integer lineNumber)
+    private Token(String token, String classification, Integer lineNumber)
     {
         this.token = token;
         this.classification = classification;
         this.lineNumber = lineNumber+1;
     }
 
-    public Token(String token, Classifications classification, Integer lineNumber)
+    Token(String token, Classifications classification, Integer lineNumber)
     {
         this(token, classification.toString(), lineNumber);
     }
