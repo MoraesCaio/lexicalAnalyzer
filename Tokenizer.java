@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import Utils.StringUtils;
 
 /**
  * This is a parser of List<String> to List<Token>. To make good use of it, simply instantiate it, call parse() and
@@ -26,9 +27,9 @@ public class Tokenizer
     private boolean onComment = false;
     private boolean onString = false;
 
-
-    /*STRINGBUILDER*/
+    /*STRING*/
     private StringBuilder sb;
+    private StringUtils su = new StringUtils();
 
 
     /**
@@ -86,15 +87,13 @@ public class Tokenizer
         int length = line.length();
         for (int i = 0; i < length; i++)
         {
-        	boolean isAllowedChar = false;
-            //Comments
+
+        	//Comments
             if ((!onComment && line.charAt(i) == '{') || onComment)
             {
                 onComment = true;
                 i += parseComment(line.substring(i, length));
-                isAllowedChar = true;
                 if(onComment) continue;
-                //System.out.println("end char: " + line.charAt(i));
             }
 
             //Strings
@@ -102,15 +101,13 @@ public class Tokenizer
             {
                 onString = true;
                 i += parseString(line.substring(i, length));
-                isAllowedChar = true;
                 if(onString) continue;
             }
 
             //Words
-            if (isLetter(line.charAt(i)))
+            if (su.isLetter(line.charAt(i)))
             {
                 i += parseWord(line.substring(i, length));
-                isAllowedChar = true;
                 continue;
             }
 
@@ -118,7 +115,6 @@ public class Tokenizer
             if (Character.isDigit(line.charAt(i)) || (line.charAt(i) == '.'))
             {
                 i += parseNum(line.substring(i, length));
-                isAllowedChar = true;
                 continue;
             }
 
@@ -127,11 +123,11 @@ public class Tokenizer
             if (Token.specialChars.replaceAll("[.{}_]","").indexOf(line.charAt(i)) != -1)
             {
                 i += parseExtras(line. substring(i));
-                isAllowedChar = true;
                 continue;
             }
 
-            if(!isAllowedChar && !(Character.isWhitespace(line.charAt(i)))) {
+            //Checking not allowed chars
+            if(Token.accChars.indexOf(line.charAt(i)) == -1) {
             	System.out.println("Character not allowed (line" + lineNum +"): " + line.charAt(i));
             }
         }
@@ -191,7 +187,7 @@ public class Tokenizer
         //Extraction
         for (;i < length; i++)
         {
-            if(!(isLetterOrDigit(substring.charAt(i)) || substring.charAt(i) == '_'))
+            if(!(su.isLetterOrDigit(substring.charAt(i)) || substring.charAt(i) == '_'))
             {
                 break;
             }
@@ -240,7 +236,7 @@ public class Tokenizer
                 if (substring.charAt(i) == '.')
                 {
                     //First dot
-                    if (nextCharIsDigit(i, substring))
+                    if (su.nextCharIsDigit(i, substring))
                         isReal = true;
                     else
                         break;
@@ -257,7 +253,7 @@ public class Tokenizer
                 //Prevents 0.0(.0)+ from being parsed as real
                 if (!isReal)
                 {
-                    if (nextCharIsDigit(i, substring))
+                    if (su.nextCharIsDigit(i, substring))
                     {
                         isReal = true;
                     }
@@ -273,7 +269,7 @@ public class Tokenizer
                     i++;
                 }
 
-                if(!Character.isDigit(substring.charAt(i)) && (substring.charAt(i) != '.' || isReal))
+                if(!Character.isDigit(substring.charAt(i)))
                 {
                     break;
                 }
@@ -310,13 +306,13 @@ public class Tokenizer
         {
             case '<':
                 tempClassif = Token.Classifications.RELATIONAL;
-                if (nextCharIsIn(i, substring, ">=")){
+                if (su.nextCharIsIn(i, substring, ">=")){
                     sb.append(substring.charAt(++i));
                 }
                 break;
             case '>':
                 tempClassif = Token.Classifications.RELATIONAL;
-                if (nextCharEquals(i, substring, '=')){
+                if (su.nextCharEquals(i, substring, '=')){
                     sb.append(substring.charAt(++i));
                 }
                 break;
@@ -325,7 +321,7 @@ public class Tokenizer
                 break;
             case ':':
                 tempClassif = Token.Classifications.DELIMITER;
-                if (nextCharEquals(i, substring, '=')){
+                if (su.nextCharEquals(i, substring, '=')){
                     sb.append(substring.charAt(++i));
                     tempClassif = Token.Classifications.ASSIGNMENT;
                 }
@@ -344,38 +340,4 @@ public class Tokenizer
         return i;
     }
 
-
-    /**
-     * Checks if an character it's an allowed character or not.
-     * @param c Character being evaluated.
-     * @return boolean - true, if it's an accepted character; false, otherwise.
-     */
-    private boolean isAllowedChar(char c)
-    {
-        return Character.isLetterOrDigit(c) && Token.accChars.indexOf(c) != -1;
-    }
-    private boolean isLastChar(int idx, int length) {
-        return idx+1 == length;
-    }
-    private boolean nextCharIsDigit(int idx, String substring)
-    {
-        return !isLastChar(idx, substring.length()) &&
-                Character.isDigit(substring.charAt(idx+1));
-    }
-    private boolean nextCharEquals(int idx, String substring, char c)
-    {
-        return !isLastChar(idx, substring.length()) &&
-                substring.charAt(idx+1) == c;
-    }
-    private boolean nextCharIsIn(int idx, String substring, String chars)
-    {
-        return !isLastChar(idx, substring.length()) &&
-                chars.indexOf(substring.charAt(idx+1)) != -1;
-    }
-    private boolean isLetter(char c) {
-    	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-	}
-	private boolean isLetterOrDigit(char c) {
-    	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
-	}
 }
