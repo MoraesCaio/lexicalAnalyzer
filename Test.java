@@ -1,6 +1,7 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
+import lexicalAnalyzer.*;
 
 /**
  * This is a lexical analyzer for Pascal. It was created as experience for a better compiler's comprehension.
