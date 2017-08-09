@@ -22,10 +22,10 @@ import Utils.StringUtils;
 public class Tokenizer
 {
     /*PROPERTIES*/
-    public List<String> lines;
-    public List<Token> tokens;
-
+    private List<String> lines;
+    private List<Token> tokens;
     private Integer lineNum;
+
     private boolean onComment = false;
     private boolean onString = false;
 
@@ -33,13 +33,12 @@ public class Tokenizer
     private StringBuilder sb;
     private StringUtils su = new StringUtils();
 
-
     /**
      * CONSTRUCTOR
      * @param lines Lines read from the source code file.
-     * @throws IllegalArgumentException
+     * @throws NullPointerException In case, lines is null.
      */
-    public Tokenizer(List<String> lines) throws IllegalArgumentException
+    public Tokenizer(List<String> lines) throws NullPointerException
     {
         if(lines == null)
         {
@@ -47,8 +46,18 @@ public class Tokenizer
         }
 
         this.lines = lines;
-        this.tokens = new ArrayList<Token>();
+        this.tokens = new ArrayList<>();
         this.lineNum = 0;
+    }
+
+
+    /**
+     * Getter for tokens.
+     * @return List<Token> The list of tokens parsed.
+     */
+    public List<Token> getTokens()
+    {
+        return tokens;
     }
 
 
@@ -144,7 +153,6 @@ public class Tokenizer
     private int parseComment(String substring)
     {
         int length = substring.length();
-        //System.out.println("first char: " + substring.charAt(0));
         for(int i = 0; i < length; i++)
         {
             if(substring.charAt(i) == '}'){
@@ -163,7 +171,6 @@ public class Tokenizer
     private int parseString(String substring)
     {
         int length = substring.length();
-        //System.out.println("first char: " + substring.charAt(0));
         for(int i = 1; i < length; i++)
         {
             if(substring.charAt(i) == '\''){
@@ -221,6 +228,7 @@ public class Tokenizer
         sb = new StringBuilder();
         int i = 0;
         int length = substring.length();
+
         boolean startsWithDigit = Character.isDigit(substring.charAt(0)); //startsWithDigit != startsWithADot
         boolean isReal = false; //flag indicating that there's already a dot, prevents 0.0(.0)+ from being parse as real
         boolean isDelimiter = false;
@@ -301,44 +309,47 @@ public class Tokenizer
     private int parseExtras(String substring)
     {
         sb = new StringBuilder();
-        Token.Classifications tempClassif = Token.Classifications.DELIMITER;
         int i = 0;
         sb.append(substring.charAt(0));
+
+        Token.Classifications classification = Token.Classifications.DELIMITER;
+
         switch(substring.charAt(0))
         {
             case '<':
-                tempClassif = Token.Classifications.RELATIONAL;
+                classification = Token.Classifications.RELATIONAL;
                 if (su.nextCharIsIn(i, substring, ">=")){
                     sb.append(substring.charAt(++i));
                 }
                 break;
             case '>':
-                tempClassif = Token.Classifications.RELATIONAL;
+                classification = Token.Classifications.RELATIONAL;
                 if (su.nextCharEquals(i, substring, '=')){
                     sb.append(substring.charAt(++i));
                 }
                 break;
             case '=':
-                tempClassif = Token.Classifications.RELATIONAL;
+                classification = Token.Classifications.RELATIONAL;
                 break;
             case ':':
-                tempClassif = Token.Classifications.DELIMITER;
+                classification = Token.Classifications.DELIMITER;
                 if (su.nextCharEquals(i, substring, '=')){
                     sb.append(substring.charAt(++i));
-                    tempClassif = Token.Classifications.ASSIGNMENT;
+                    classification = Token.Classifications.ASSIGNMENT;
                 }
                 break;
             case ',': case ';': case '(': case ')':
-                tempClassif = Token.Classifications.DELIMITER;
+                classification = Token.Classifications.DELIMITER;
                 break;
             case '+': case '-':
-                tempClassif = Token.Classifications.ADDITION;
+                classification = Token.Classifications.ADDITION;
                 break;
             case '*': case '/':
-                tempClassif = Token.Classifications.MULTIPLICATION;
+                classification = Token.Classifications.MULTIPLICATION;
                 break;
         }
-        tokens.add(new Token(sb.toString(), tempClassif, lineNum));
+
+        tokens.add(new Token(sb.toString(), classification, lineNum));
         return i;
     }
 
