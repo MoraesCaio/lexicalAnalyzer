@@ -31,7 +31,7 @@ public class Test
         }
         catch (Exception e)
         {
-            System.out.println("Error:");
+            System.out.println("Error:" + e.getMessage());
             e.printStackTrace();
             //System.out.println(System.getProperty("user.dir"));
         }

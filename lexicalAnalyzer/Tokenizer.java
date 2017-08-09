@@ -26,8 +26,12 @@ public class Tokenizer
     private List<Token> tokens;
     private Integer lineNum;
 
+    private boolean DEBUG_MODE = false;
     private boolean onComment = false;
+    private int lastOpenCommentLine = 0;
     private boolean onString = false;
+    private int lastOpenStringLine = 0;
+
 
     /*STRING*/
     private StringBuilder sb;
@@ -50,6 +54,19 @@ public class Tokenizer
         this.lineNum = 0;
     }
 
+    public Tokenizer(List<String> lines, boolean DEBUG_MODE) throws NullPointerException
+    {
+        if(lines == null)
+        {
+            throw new IllegalArgumentException("\"lines\" cannot be null.");
+        }
+
+        this.lines = lines;
+        this.tokens = new ArrayList<>();
+        this.lineNum = 0;
+        this.DEBUG_MODE = DEBUG_MODE;
+    }
+
 
     /**
      * Getter for tokens.
@@ -64,7 +81,7 @@ public class Tokenizer
     /**
      * Main method. Iterates through the lines of source code whilst parsing.
      */
-    public void parse()
+    public void parse() throws LexicalException
     {
         //Parsing
         for (String line : lines)
@@ -77,6 +94,31 @@ public class Tokenizer
             parseLine(line);
             lineNum += 1;
         }
+
+        //Detecting unclosed comments or strings
+        String errorMsg;
+        if (onComment)
+        {
+            errorMsg = "A comment was not closed.\nLine: " + (lastOpenCommentLine+1);
+            if (!DEBUG_MODE)
+            {
+                throw new LexicalException(errorMsg);
+            }
+
+            System.out.println(errorMsg);
+        }
+        if (onString)
+        {
+            errorMsg = "A string was not closed.\nLine: " + (lastOpenStringLine+1);
+            
+            if (!DEBUG_MODE)
+            {
+                throw new LexicalException(errorMsg);
+            }
+
+            System.out.println(errorMsg);
+        }
+
         //Printing
         for (Token token : tokens)
         {
@@ -91,7 +133,7 @@ public class Tokenizer
      * Blank spaces and comments will be ignored.
      * @param line line that will be parsed.
      */
-    private void parseLine(String line)
+    private void parseLine(String line) throws LexicalException
     {
         sb = new StringBuilder();
 
@@ -99,7 +141,7 @@ public class Tokenizer
         for (int i = 0; i < length; i++)
         {
 
-        	//Comments
+            //Comments
             if ((!onComment && line.charAt(i) == '{') || onComment)
             {
                 onComment = true;
@@ -138,8 +180,16 @@ public class Tokenizer
             }
 
             //Checking not allowed chars
-            if(Token.accChars.indexOf(line.charAt(i)) == -1) {
-            	System.out.println("Character not allowed (line" + lineNum +"): " + line.charAt(i));
+            if(Token.accChars.indexOf(line.charAt(i)) == -1)
+            {
+                String errorMsg = "Character not allowed : " + line.charAt(i) +
+                        "\nLine: " + (lastOpenCommentLine + 1);
+                if (!DEBUG_MODE)
+                {
+                    throw new LexicalException(errorMsg);
+                }
+
+                System.out.println(errorMsg);
             }
         }
     }
@@ -152,6 +202,7 @@ public class Tokenizer
      */
     private int parseComment(String substring)
     {
+        lastOpenCommentLine = lineNum;
         int length = substring.length();
         for(int i = 0; i < length; i++)
         {
@@ -163,6 +214,7 @@ public class Tokenizer
         return length-1;
     }
 
+
     /**
      * Ignores the strings.
      * @param substring Part of the line that is not parsed yet.
@@ -170,6 +222,7 @@ public class Tokenizer
      */
     private int parseString(String substring)
     {
+        lastOpenStringLine = lineNum;
         int length = substring.length();
         for(int i = 1; i < length; i++)
         {
