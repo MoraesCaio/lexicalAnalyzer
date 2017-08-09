@@ -26,7 +26,7 @@ public class Tokenizer
     private List<Token> tokens;
     private Integer lineNum;
 
-    private boolean DEBUG_MODE = false;
+    public boolean DEBUG_MODE = false;
     private boolean onComment = false;
     private int lastOpenCommentLine = 0;
     private boolean onString = false;
