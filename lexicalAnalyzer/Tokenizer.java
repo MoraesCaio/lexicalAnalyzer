@@ -220,27 +220,6 @@ public class Tokenizer
         return length-1;
     }
 
-
-    /**
-     * Ignores the comments.
-     * @param substring Part of the line that is not parsed yet.
-     * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
-     */
-    private int parseCommentLine(String substring)
-    {
-        lastOpenCommentLine = lineNum;
-        int length = substring.length();
-        for(int i = 0; i < length; i++)
-        {
-            if(substring.charAt(i) == '}'){
-                onComment = false;
-                return i;
-            }
-        }
-        return length-1;
-    }
-
-
     /**
      * Ignores the strings.
      * @param substring Part of the line that is not parsed yet.
