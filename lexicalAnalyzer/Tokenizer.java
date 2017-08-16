@@ -2,6 +2,7 @@ package lexicalAnalyzer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.*;
 import Utils.StringUtils;
 
 /**
@@ -277,85 +278,64 @@ public class Tokenizer
 
 
     /**
-     * Parse numbers: reals and integers.
+     * Parse numbers: complex, reals and integers.
      * @param substring Part of the line that is not parsed yet.
      * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
      */
-    private int parseNum(String substring)
+    private int parseNum(String substring) throws LexicalException
     {
-        sb = new StringBuilder();
-        int i = 0;
-        int length = substring.length();
+        //Regex
+        //COMPLEX
+        String regComp = "(\\d*\\.\\d+|\\d+)i(\\+|-)?(\\d*\\.\\d+|\\d+)";
+        Pattern pComp = Pattern.compile(regComp);
+        Matcher mComp = pComp.matcher(substring);
 
-        boolean startsWithDigit = Character.isDigit(substring.charAt(0)); //startsWithDigit != startsWithADot
-        boolean isReal = false; //flag indicating that there's already a dot, prevents 0.0(.0)+ from being parse as real
-        boolean isDelimiter = false;
+        //REAL
+        String regReal = "(\\d*\\.\\d+)";
+        Pattern pReal = Pattern.compile(regReal);
+        Matcher mReal = pReal.matcher(substring);
 
-        //Extraction
-        if(startsWithDigit)
+        //INTEGER
+        String regInt = "(\\d+)";
+        Pattern pInt = Pattern.compile(regInt);
+        Matcher mInt = pInt.matcher(substring);
+
+        //Starts with a dot but subsequent characters are not a number. It's treated as a DELIMITER dot
+        if (!mComp.lookingAt() && !mReal.lookingAt() && !mInt.lookingAt())
         {
-            for (; i < length; i++)
-            {
-                if (!Character.isDigit(substring.charAt(i)) && (substring.charAt(i) != '.' || isReal))
-                {
-                    break;
-                }
-
-                if (substring.charAt(i) == '.')
-                {
-                    //First dot
-                    if (su.nextCharIsDigit(substring, i))
-                        isReal = true;
-                    else
-                        break;
-                }
-
-                sb.append(substring.charAt(i));
-            }
+            tokens.add(new Token(substring.charAt(0) + "", Token.Classifications.DELIMITER, lineNum));
+            return 0;
         }
-        //startsWithADot
+
+        //If matches, captures the matching string into a token and returns its length
+        if (mComp.lookingAt())
+        {
+            tokens.add(new Token(mComp.group(), Token.Classifications.COMPLEX, lineNum));
+            return mComp.group().length()-1;
+        }
+        else if (mReal.lookingAt())
+        {
+            tokens.add(new Token(mReal.group(), Token.Classifications.REAL, lineNum));
+            return mReal.group().length()-1;
+        }
+        else if (mInt.lookingAt())
+        {
+            tokens.add(new Token(mInt.group(), Token.Classifications.INTEGER, lineNum));
+            return mInt.group().length()-1;
+        }
+
+        //In case some unexpected input is read.
         else
         {
-            for (; i < length; i++)
+            String errorMsg = "Unexpected input: " + substring + "\nline " + (lineNum+1);
+            if (!DEBUG_MODE)
             {
-                //Prevents 0.0(.0)+ from being parsed as real
-                if (!isReal)
-                {
-                    if (su.nextCharIsDigit(substring, i))
-                    {
-                        isReal = true;
-                    }
-                    else
-                    {
-                        isDelimiter = true;
-                        sb.append(substring.charAt(0));
-                        i++;
-                        break;
-                    }
-
-                    sb.append(substring.charAt(0));
-                    i++;
-                }
-
-                if(!Character.isDigit(substring.charAt(i)))
-                {
-                    break;
-                }
-
-                sb.append(substring.charAt(i));
+                throw new LexicalException(errorMsg);
             }
-        }
 
-        //Classification
-        if(isReal) {
-            tokens.add(new Token(sb.toString(), Token.Classifications.REAL, lineNum));
-        } else if(isDelimiter){
-            tokens.add(new Token(sb.toString(), Token.Classifications.DELIMITER, lineNum));
-        } else {
-            tokens.add(new Token(sb.toString(), Token.Classifications.INTEGER, lineNum));
+            System.out.println(errorMsg);
+            return 0;
         }
-
-        return (i == length)? length-1 : (i-1);
     }
 
 
