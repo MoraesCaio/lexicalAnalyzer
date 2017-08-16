@@ -151,7 +151,7 @@ public class Tokenizer
             //Comment line
             if (line.charAt(i) == '/' && su.nextCharEquals(line, i, '/'))
             {
-                System.out.println("Line comment on line: " + lineNum);
+                System.out.println("Line comment on line: " + (lineNum+1));
                 return;
             }
 
