@@ -8,40 +8,40 @@ public class StringUtils
 
 
 
-    public boolean isLastChar(int idx, int length)
+    public boolean isLastChar(int stringLength, int idx)
     {
-        return idx+1 == length;
+        return idx+1 == stringLength;
     }
     
 
     
-    public boolean isLastChar(int idx, String substring)
+    public boolean isLastChar(String string, int idx)
     {
-        return idx+1 == substring.length();
+        return idx+1 >= string.length();
     }
 
+
     
-    
-    public boolean nextCharIsDigit(int idx, String substring)
+    public boolean nextCharIsDigit(String string, int idx)
     {
-        return !isLastChar(idx, substring) &&
-                Character.isDigit(substring.charAt(idx+1));
+        return !isLastChar(string, idx) &&
+                Character.isDigit(string.charAt(idx+1));
+    }
+
+
+
+    public boolean nextCharEquals(String string, int idx, char c)
+    {
+        return !isLastChar(string.length(), idx) &&
+                string.charAt(idx+1) == c;
     }
     
 
 
-    public boolean nextCharEquals(int idx, String substring, char c)
+    public boolean nextCharIsIn(String string, int idx, String chars)
     {
-        return !isLastChar(idx, substring.length()) &&
-                substring.charAt(idx+1) == c;
-    }
-    
-
-
-    public boolean nextCharIsIn(int idx, String substring, String chars)
-    {
-        return !isLastChar(idx, substring.length()) &&
-                chars.indexOf(substring.charAt(idx+1)) != -1;
+        return !isLastChar(string.length(), idx) &&
+                chars.indexOf(string.charAt(idx+1)) != -1;
     }
     
 

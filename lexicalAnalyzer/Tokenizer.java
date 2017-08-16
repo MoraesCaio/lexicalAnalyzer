@@ -140,13 +140,19 @@ public class Tokenizer
         int length = line.length();
         for (int i = 0; i < length; i++)
         {
-
             //Comments
-            if ((!onComment && line.charAt(i) == '{') || onComment)
+            if ((!onComment && line.charAt(i) == '{')|| onComment)
             {
                 onComment = true;
                 i += parseComment(line.substring(i, length));
                 if(onComment) continue;
+            }
+
+            //Comment line
+            if (line.charAt(i) == '/' && su.nextCharEquals(line, i, '/'))
+            {
+                System.out.println("Line comment on line: " + lineNum);
+                return;
             }
 
             //Strings
@@ -201,6 +207,26 @@ public class Tokenizer
      * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
      */
     private int parseComment(String substring)
+    {
+        lastOpenCommentLine = lineNum;
+        int length = substring.length();
+        for(int i = 0; i < length; i++)
+        {
+            if(substring.charAt(i) == '}'){
+                onComment = false;
+                return i;
+            }
+        }
+        return length-1;
+    }
+
+
+    /**
+     * Ignores the comments.
+     * @param substring Part of the line that is not parsed yet.
+     * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
+     */
+    private int parseCommentLine(String substring)
     {
         lastOpenCommentLine = lineNum;
         int length = substring.length();
@@ -299,7 +325,7 @@ public class Tokenizer
                 if (substring.charAt(i) == '.')
                 {
                     //First dot
-                    if (su.nextCharIsDigit(i, substring))
+                    if (su.nextCharIsDigit(substring, i))
                         isReal = true;
                     else
                         break;
@@ -316,7 +342,7 @@ public class Tokenizer
                 //Prevents 0.0(.0)+ from being parsed as real
                 if (!isReal)
                 {
-                    if (su.nextCharIsDigit(i, substring))
+                    if (su.nextCharIsDigit(substring, i))
                     {
                         isReal = true;
                     }
@@ -371,13 +397,13 @@ public class Tokenizer
         {
             case '<':
                 classification = Token.Classifications.RELATIONAL;
-                if (su.nextCharIsIn(i, substring, ">=")){
+                if (su.nextCharIsIn(substring, i, ">=")){
                     sb.append(substring.charAt(++i));
                 }
                 break;
             case '>':
                 classification = Token.Classifications.RELATIONAL;
-                if (su.nextCharEquals(i, substring, '=')){
+                if (su.nextCharEquals(substring, i, '=')){
                     sb.append(substring.charAt(++i));
                 }
                 break;
@@ -386,7 +412,7 @@ public class Tokenizer
                 break;
             case ':':
                 classification = Token.Classifications.DELIMITER;
-                if (su.nextCharEquals(i, substring, '=')){
+                if (su.nextCharEquals(substring, i, '=')){
                     sb.append(substring.charAt(++i));
                     classification = Token.Classifications.ASSIGNMENT;
                 }
