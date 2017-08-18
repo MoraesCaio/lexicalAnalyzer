@@ -106,6 +106,7 @@ public class Tokenizer
 
             System.out.println(errorMsg);
         }
+
         if (onString)
         {
             errorMsg = "A string was not closed.\nLine: " + (lastOpenStringLine+1);
@@ -116,13 +117,6 @@ public class Tokenizer
             }
 
             System.out.println(errorMsg);
-        }
-
-        //Printing
-        for (Token token : tokens)
-        {
-            System.out.println(token);
-            System.out.println();
         }
     }
 
