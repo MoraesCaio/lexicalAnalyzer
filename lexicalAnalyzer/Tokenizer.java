@@ -164,7 +164,7 @@ public class Tokenizer
             }
 
             //Numbers
-            if (Character.isDigit(line.charAt(i)) || (line.charAt(i) == '.'))
+            if (su.isDigit(line.charAt(i)) || (line.charAt(i) == '.'))
             {
                 i += parseNum(line.substring(i, length));
                 continue;

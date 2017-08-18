@@ -66,13 +66,22 @@ public class StringUtils
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
 
+    /**
+     * Checks if the char is one of the ISO-LATIN-1 digits.
+     * @param c Char to be tested.
+     * @return true, if the char is one of the ISO-LATIN-1 digits; false, otherwise.
+     */
+    public boolean isDigit(char c) {
+        return (c >= '0' && c <= '9');
+    }
 
     /**
-     * Checks if the char is in [a-z] or [A-Z] or is an digit. It will return false, if char c contains some diacritic.
+     * Checks if the char is in [a-z] or [A-Z] or is one of the ISO-LATIN-1 digits.
+     * It will return false, if char c contains some diacritic.
      * @param c Char to be tested.
      * @return true, if the character is in [a-z] or [A-Z]; false, otherwise.
      */
     public boolean isLetterOrDigit(char c) {
-        return isLetter(c) || (c >= '0' && c <= '9');
+        return isLetter(c) || isDigit(c);
     }
 }
