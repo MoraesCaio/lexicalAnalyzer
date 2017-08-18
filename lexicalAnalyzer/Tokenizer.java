@@ -63,7 +63,7 @@ public class Tokenizer
 
     public Tokenizer()
     {
-        this(new ArrayList<String>());
+        this(new ArrayList<>());
     }
 
 
