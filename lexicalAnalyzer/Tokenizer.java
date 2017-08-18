@@ -271,11 +271,11 @@ public class Tokenizer
         {
             tokens.add(new Token(sb.toString(), Token.Classifications.KEYWORD, lineNum));
         }
-        else if(sb.toString().toLowerCase().equals(Token.addOP))
+        else if(sb.toString().toLowerCase().equals(Token.additionOperator))
         {
             tokens.add(new Token(sb.toString(), Token.Classifications.ADDITION, lineNum));
         }
-        else if(sb.toString().toLowerCase().equals(Token.multOP))
+        else if(sb.toString().toLowerCase().equals(Token.multiplicationOperator))
         {
             tokens.add(new Token(sb.toString(), Token.Classifications.MULTIPLICATION, lineNum));
         }
