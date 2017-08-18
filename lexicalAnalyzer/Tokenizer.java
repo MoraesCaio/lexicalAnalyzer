@@ -285,20 +285,20 @@ public class Tokenizer
     private int parseNum(String substring) throws LexicalException
     {
         //Regex
-        //COMPLEX
-        String regComp = "(\\d*\\.\\d+|\\d+)i(\\+|-)?(\\d*\\.\\d+|\\d+)";
-        Pattern pComp = Pattern.compile(regComp);
-        Matcher mComp = pComp.matcher(substring);
+        //INTEGER
+        String regInt = "\\d+";
+        Pattern pInt = Pattern.compile(regInt);
+        Matcher mInt = pInt.matcher(substring);
 
         //REAL
-        String regReal = "(\\d*\\.\\d+)";
+        String regReal = "\\d*\\."+regInt;
         Pattern pReal = Pattern.compile(regReal);
         Matcher mReal = pReal.matcher(substring);
 
-        //INTEGER
-        String regInt = "(\\d+)";
-        Pattern pInt = Pattern.compile(regInt);
-        Matcher mInt = pInt.matcher(substring);
+        //COMPLEX
+        String regComp = "("+regReal+"|"+regInt+")i(\\+|-)?("+regReal+"|"+regInt+")";
+        Pattern pComp = Pattern.compile(regComp);
+        Matcher mComp = pComp.matcher(substring);
 
         //Starts with a dot but subsequent characters are not a number. It's treated as a DELIMITER dot
         if (!mComp.lookingAt() && !mReal.lookingAt() && !mInt.lookingAt())
