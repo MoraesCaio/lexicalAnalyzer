@@ -137,8 +137,8 @@ public class Tokenizer
     private void parseLine(String line) throws LexicalException
     {
         sb = new StringBuilder();
-
         int length = line.length();
+
         for (int i = 0; i < length; i++)
         {
             //Comments
@@ -211,13 +211,16 @@ public class Tokenizer
     {
         lastOpenCommentLine = lineNum;
         int length = substring.length();
+
         for(int i = 0; i < length; i++)
         {
-            if(substring.charAt(i) == '}'){
+            if(substring.charAt(i) == '}')
+            {
                 onComment = false;
                 return i;
             }
         }
+
         return length-1;
     }
 
@@ -230,13 +233,16 @@ public class Tokenizer
     {
         lastOpenStringLine = lineNum;
         int length = substring.length();
+
         for(int i = 1; i < length; i++)
         {
-            if(substring.charAt(i) == '\''){
+            if(substring.charAt(i) == '\'')
+            {
                 onString = false;
                 return i;
             }
         }
+
         return length-1;
     }
 
@@ -263,13 +269,20 @@ public class Tokenizer
         }
 
         //Classification
-        if(Token.keywords.contains(sb.toString().toLowerCase())) {
+        if(Token.keywords.contains(sb.toString().toLowerCase()))
+        {
             tokens.add(new Token(sb.toString(), Token.Classifications.KEYWORD, lineNum));
-        } else if(sb.toString().toLowerCase().equals(Token.addOP)){
+        }
+        else if(sb.toString().toLowerCase().equals(Token.addOP))
+        {
             tokens.add(new Token(sb.toString(), Token.Classifications.ADDITION, lineNum));
-        } else if(sb.toString().toLowerCase().equals(Token.multOP)){
+        }
+        else if(sb.toString().toLowerCase().equals(Token.multOP))
+        {
             tokens.add(new Token(sb.toString(), Token.Classifications.MULTIPLICATION, lineNum));
-        } else {
+        }
+        else
+        {
             tokens.add(new Token(sb.toString(), Token.Classifications.IDENTIFIER, lineNum));
         }
 
@@ -350,6 +363,7 @@ public class Tokenizer
         int i = 0;
         sb.append(substring.charAt(0));
 
+        //Default classification
         Token.Classifications classification = Token.Classifications.DELIMITER;
 
         switch(substring.charAt(0))
@@ -388,6 +402,7 @@ public class Tokenizer
         }
 
         tokens.add(new Token(sb.toString(), classification, lineNum));
+
         return i;
     }
 
