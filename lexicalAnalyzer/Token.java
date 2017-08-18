@@ -34,7 +34,7 @@ public class Token {
 
 
     /**
-     * CONSTRUCTOR
+     * CONSTRUCTORS
      * @param token Text of the token.
      * @param classification Classification of the token.
      * @param lineNumber Number of the line where the token was found.
@@ -46,11 +46,24 @@ public class Token {
         this.lineNumber = lineNumber+1;
     }
 
-    Token(String token, Classifications classification, Integer lineNumber)
+    public Token(String token, Classifications classification, Integer lineNumber)
     {
         this(token, classification.toString(), lineNumber);
     }
 
+    public Token(String token, Classifications classification)
+    {
+        this(token, classification.toString(), 0);
+    }
+
+    public Token(String token)
+    {
+        this(token, Classifications.UNCLASSIFIED);
+    }
+
+    public Token(){
+        this("");
+    }
 
     /**
      * A simple toString() for tokens.
@@ -77,7 +90,8 @@ public class Token {
         ASSIGNMENT("assignment"), //:=
         RELATIONAL("relational"), //<,>,=,<>,<=,>=
         ADDITION("addition"), //or + -
-        MULTIPLICATION("multiplication"); //and * /
+        MULTIPLICATION("multiplication"), //and * /
+        UNCLASSIFIED("unclassified"); //default value
 
         private final String text;
 

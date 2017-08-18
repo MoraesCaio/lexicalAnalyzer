@@ -27,34 +27,22 @@ public class Tokenizer
     private List<Token> tokens;
     private Integer lineNum;
 
-    public boolean DEBUG_MODE = false;
-    private boolean onComment = false;
-    private int lastOpenCommentLine = 0;
-    private boolean onString = false;
-    private int lastOpenStringLine = 0;
-
+    public boolean DEBUG_MODE;
+    private boolean onComment;
+    private int lastOpenCommentLine;
+    private boolean onString;
+    private int lastOpenStringLine;
 
     /*STRING*/
     private StringBuilder sb;
     private StringUtils su = new StringUtils();
+
 
     /**
      * CONSTRUCTOR
      * @param lines Lines read from the source code file.
      * @throws NullPointerException In case, lines is null.
      */
-    public Tokenizer(List<String> lines) throws NullPointerException
-    {
-        if(lines == null)
-        {
-            throw new IllegalArgumentException("\"lines\" cannot be null.");
-        }
-
-        this.lines = lines;
-        this.tokens = new ArrayList<>();
-        this.lineNum = 0;
-    }
-
     public Tokenizer(List<String> lines, boolean DEBUG_MODE) throws NullPointerException
     {
         if(lines == null)
@@ -66,6 +54,16 @@ public class Tokenizer
         this.tokens = new ArrayList<>();
         this.lineNum = 0;
         this.DEBUG_MODE = DEBUG_MODE;
+    }
+
+    public Tokenizer(List<String> lines)
+    {
+        this(lines, false);
+    }
+
+    public Tokenizer()
+    {
+        this(new ArrayList<String>());
     }
 
 
@@ -364,7 +362,7 @@ public class Tokenizer
         sb.append(substring.charAt(0));
 
         //Default classification
-        Token.Classifications classification = Token.Classifications.DELIMITER;
+        Token.Classifications classification = Token.Classifications.UNCLASSIFIED;
 
         switch(substring.charAt(0))
         {
