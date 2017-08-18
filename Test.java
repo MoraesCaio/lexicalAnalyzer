@@ -26,8 +26,12 @@ public class Test
 
         try
         {
-            tokenizer = new Tokenizer(Files.readAllLines(Paths.get("Program1.pascal")));
+            tokenizer = new Tokenizer(Files.readAllLines(Paths.get("Program1.pascal")), true);
             tokenizer.parse();
+            for(Token t : tokenizer.getTokens())
+            {
+                System.out.println(t + "\n");
+            }
         }
         catch (Exception e)
         {
