@@ -296,12 +296,12 @@ public class Tokenizer
         Matcher mInt = pInt.matcher(substring);
 
         //REAL
-        String regReal = "\\d*\\."+regInt;
+        String regReal = regInt+"\\.\\d*";
         Pattern pReal = Pattern.compile(regReal);
         Matcher mReal = pReal.matcher(substring);
 
         //COMPLEX
-        String regComp = "("+regReal+"|"+regInt+")i(\\+|-)?("+regReal+"|"+regInt+")";
+        String regComp = "("+regReal+"|"+regInt+")i(\\+|-)("+regReal+"|"+regInt+")";
         Pattern pComp = Pattern.compile(regComp);
         Matcher mComp = pComp.matcher(substring);
 

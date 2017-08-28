@@ -76,6 +76,9 @@ public class Token {
         "LINE: " + lineNumber;
     }
 
+    public String getString() {return token;}
+    public String getClassification() {return classification;}
+
 
     /**
      * All possible classifications for tokens in Pascal
