@@ -258,76 +258,187 @@ public class SyntacticAnalyzer {
     }
 
     private void command() {
-        var();
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals(":=")) {
+        if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
 
+            count++;
+            token = tokens.get(count);
+            if(token.getString().toLowerCase().equals(":=")) {
+                var();
+            } else {
+                procedureActivationA();
+            }
+        } else if(token.getString().toLowerCase().equals("if")) {
+            expression();
+            count++;
+            token = tokens.get(count);
+            if(token.getString().toLowerCase().equals("if")) {
+                command();
+                partElse();
+            }
+
+        } else if(token.getString().toLowerCase().equals("while")) {
+            expression();
+            count++;
+            token = tokens.get(count);
+            if(token.getString().toLowerCase().equals("do")) {
+                command();
+            }
+
+        } else {
+            compoundCommand();
         }
-
-        expression();
-
-        //Parei aqui
     }
 
     private void partElse() {
-
+        count++;
+        token = tokens.get(count);
+        if(token.getString().toLowerCase().equals("else")) {
+            command();
+        }
     }
 
     private void var() {
+        count++;
+        token = tokens.get(count);
+        if (token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
 
+        }
     }
 
     private void procedureActivationA() {
-
+        count++;
+        token = tokens.get(count);
+        if (token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
+            procedureActivationB();
+        }
     }
 
     private void procedureActivationB() {
+        count++;
+        token = tokens.get(count);
+        if(token.getString().toLowerCase().equals("(")) {
+            expressionListA();
+        }
+    }
 
+    private void expressionListA() {
+        expression();
+        expressionListB();
+    }
+
+    private void expressionListB() {
+        count++;
+        token = tokens.get(count);
+        if(token.getString().toLowerCase().equals(",")) {
+            expression();
+            expressionListB();
+        }
     }
 
     private void expression() {
+        simpleExpressionA();
 
+        count++;
+        token = tokens.get(count);
+        if(token.getClassification().equals(Token.Classifications.RELATIONAL.toString())) {
+            simpleExpressionA();
+        }
     }
 
     private void simpleExpressionA() {
-
+        count++;
+        token = tokens.get(count);
+        if(token.getString().toLowerCase().equals("-") || token.getString().toLowerCase().equals("+")) {
+            sign();
+            termA();
+            simpleExpressionB();
+        } else {
+            termA();
+            simpleExpressionB();
+        }
     }
 
     private void simpleExpressionB() {
-
+        count++;
+        token = tokens.get(count);
+        if(token.getClassification().equals(Token.Classifications.ADDITION.toString())) {
+            opAdditive();
+            termA();
+            simpleExpressionB();
+        }
     }
 
     private void termA() {
-
+        factor();
+        termB();
     }
 
     private void termB() {
-
+        count++;
+        token = tokens.get(count);
+        if(token.getClassification().equals(Token.Classifications.MULTIPLICATION.toString())) {
+            opMultiplicative();
+            factor();
+            termB();
+        }
     }
 
-    private void factorA() {
+    private void factor() {
+        count++;
+        token = tokens.get(count);
+        if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
+            count++;
+            token = tokens.get(count);
+            if(token.getString().toLowerCase().equals("(")) {
+                expressionListA();
+                if(token.getString().toLowerCase().equals(")")) {
 
-    }
+                }
+            }
+        } else if(token.getClassification().equals(Token.Classifications.INTEGER.toString())) {
 
-    private void factorB() {
+        } else if(token.getClassification().equals(Token.Classifications.REAL.toString())) {
 
+        } else if(token.getClassification().equals(Token.Classifications.INTEGER.toString())) {
+
+        } else if(token.getString().toLowerCase().equals("true")) {
+
+        } else if(token.getString().toLowerCase().equals("false")) {
+
+        } else if(token.getString().toLowerCase().equals("not")) {
+            factor();
+        }
     }
 
     private void sign() {
+        count++;
+        token = tokens.get(count);
+        if(token.getString().toLowerCase().equals("+") || token.getString().toLowerCase().equals("-")) {
 
+        }
     }
 
     private void opRelational() {
-
+        count++;
+        token = tokens.get(count);
+        if(token.getClassification().equals(Token.Classifications.RELATIONAL.toString())) {
+        }
     }
 
     private void opAdditive() {
-
+        count++;
+        token = tokens.get(count);
+        if(token.getClassification().equals(Token.Classifications.ADDITION.toString())) {
+        }
     }
 
     private void opMultiplicative() {
-
+        count++;
+        token = tokens.get(count);
+        if(token.getClassification().equals(Token.Classifications.MULTIPLICATION.toString())) {
+        }
     }
 }
