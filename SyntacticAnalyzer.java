@@ -86,7 +86,7 @@ public class SyntacticAnalyzer
 
     private void varDeclarationListA()
     {
-        indetifiersListA();
+        identifiersListA();
 
         count++;
         currentToken = tokens.get(count);
@@ -112,7 +112,7 @@ public class SyntacticAnalyzer
         currentToken = tokens.get(count);
         if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
-            indetifiersListA();
+            identifiersListA();
 
             count++;
             currentToken = tokens.get(count);
@@ -132,7 +132,7 @@ public class SyntacticAnalyzer
         }
     }
 
-    private void indetifiersListA()
+    private void identifiersListA()
     {
 
         count++;
@@ -140,12 +140,12 @@ public class SyntacticAnalyzer
         if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
 
-            indetifiersListB();
+            identifiersListB();
 
         }
     }
 
-    private void indetifiersListB()
+    private void identifiersListB()
     {
 
         count++;
@@ -158,7 +158,7 @@ public class SyntacticAnalyzer
             if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
             {
 
-                indetifiersListB();
+                identifiersListB();
             }
         }
     }
@@ -246,7 +246,7 @@ public class SyntacticAnalyzer
 
     private void parameterListA()
     {
-        indetifiersListA();
+        identifiersListA();
 
         count++;
         currentToken = tokens.get(count);
@@ -263,7 +263,7 @@ public class SyntacticAnalyzer
         currentToken = tokens.get(count);
         if(currentToken.getText().toLowerCase().equals(";"))
         {
-            indetifiersListA();
+            identifiersListA();
 
             count++;
             currentToken = tokens.get(count);
