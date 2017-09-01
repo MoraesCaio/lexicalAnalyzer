@@ -95,28 +95,14 @@ public class Tokenizer
         }
 
         //Detecting unclosed comments or strings
-        String errorMsg;
         if (onComment)
         {
-            errorMsg = "A comment was not closed.\nLine: " + (lastOpenCommentLine+1);
-            if (!DEBUG_MODE)
-            {
-                throw new LexicalException(errorMsg);
-            }
-
-            System.out.println(errorMsg);
+            lexicalError("A comment was not closed.\nLine: " + (lastOpenCommentLine+1));
         }
 
         if (onString)
         {
-            errorMsg = "A string was not closed.\nLine: " + (lastOpenStringLine+1);
-            
-            if (!DEBUG_MODE)
-            {
-                throw new LexicalException(errorMsg);
-            }
-
-            System.out.println(errorMsg);
+            lexicalError("A string was not closed.\nLine: " + (lastOpenStringLine+1));
         }
     }
 
@@ -398,4 +384,18 @@ public class Tokenizer
         return i;
     }
 
+    /**
+     * Throws LexicalException or print errorMsg regarding DEBUG_MODE value.
+     * @param errorMsg Message with error's details.
+     * @throws LexicalException
+     */
+    private void lexicalError(String errorMsg) throws LexicalException
+    {
+        if (!this.DEBUG_MODE)
+        {
+            throw new LexicalException(errorMsg);
+        }
+
+        System.out.println(errorMsg);
+    }
 }

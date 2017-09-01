@@ -5,14 +5,27 @@ import java.util.List;
 
 public class SyntaxAnalyzer
 {
-
+    /*PROPERTIES*/
     private List<Token> tokens;
     private Token currentToken;
     private int count = 0;
+    private boolean DEBUG_MODE;
+    private String errorMsg;
+
+
+    /**
+     * CONSTRUCTORS
+     * @param tokens
+     */
+    public SyntaxAnalyzer(List<Token> tokens, boolean DEBUG_MODE)
+    {
+        this.tokens = tokens;
+        this.DEBUG_MODE = DEBUG_MODE;
+    }
 
     public SyntaxAnalyzer(List<Token> tokens)
     {
-        this.tokens = tokens;
+        this(tokens, false);
     }
 
     public SyntaxAnalyzer()
@@ -20,16 +33,16 @@ public class SyntaxAnalyzer
         this(null);
     }
 
+
     public void run()
     {
-
         currentToken = tokens.get(count);
         program();
     }
 
-    private void program()
-    {
 
+    private void program() throws SyntaxException
+    {
         if(currentToken.getText().toLowerCase().equals("program"))
         {
             count++;
@@ -40,7 +53,6 @@ public class SyntaxAnalyzer
                 currentToken = tokens.get(count);
                 if(currentToken.getText().toLowerCase().equals(";"))
                 {
-
                     varDeclaration();
                     subProgramsDeclarationA();
                     compoundCommand();
@@ -52,28 +64,25 @@ public class SyntaxAnalyzer
                         //finish
                     }
                 }
-
                 else
                 {
                     //Error
                 }
             }
-
             else
             {
                 //Error
             }
         }
-
         else
         {
             //Error
         }
     }
 
+
     private void varDeclaration()
     {
-
         count++;
         currentToken = tokens.get(count);
         if(currentToken.getText().toLowerCase().equals("var"))
@@ -85,6 +94,7 @@ public class SyntaxAnalyzer
             //Error
         }
     }
+
 
     private void varDeclarationListA()
     {
@@ -560,5 +570,14 @@ public class SyntaxAnalyzer
         if(currentToken.getClassification().equals(Token.Classifications.MULTIPLICATION.toString()))
         {
         }
+    }
+
+    private void syntaxError(String errorMsg) throws SyntaxException
+    {
+        if (!DEBUG_MODE)
+        {
+            throw new SyntaxException(errorMsg);
+        }
+        System.out.println(errorMsg);
     }
 }
