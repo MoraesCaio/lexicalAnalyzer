@@ -10,7 +10,6 @@ public class SyntaxAnalyzer
     private Token currentToken;
     private int count = 0;
     private boolean DEBUG_MODE;
-    private String errorMsg;
 
 
     /**
@@ -37,7 +36,15 @@ public class SyntaxAnalyzer
     public void run()
     {
         currentToken = tokens.get(count);
-        program();
+        try
+        {
+            program();
+        }
+        catch (SyntaxException e)
+        {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
@@ -66,22 +73,22 @@ public class SyntaxAnalyzer
                 }
                 else
                 {
-                    //Error
+                    syntaxError("");
                 }
             }
             else
             {
-                //Error
+                syntaxError("");
             }
         }
         else
         {
-            //Error
+            syntaxError("");
         }
     }
 
 
-    private void varDeclaration()
+    private void varDeclaration() throws SyntaxException
     {
         count++;
         currentToken = tokens.get(count);
@@ -91,7 +98,7 @@ public class SyntaxAnalyzer
         }
         else
         {
-            //Error
+            syntaxError("");
         }
     }
 
@@ -198,12 +205,12 @@ public class SyntaxAnalyzer
         }
     }
 
-    private void subProgramsDeclarationA()
+    private void subProgramsDeclarationA() throws SyntaxException
     {
         subProgramsDeclarationB();
     }
 
-    private void subProgramsDeclarationB()
+    private void subProgramsDeclarationB() throws SyntaxException
     {
 
         count++;
@@ -216,7 +223,7 @@ public class SyntaxAnalyzer
         }
     }
 
-    private void subProgram()
+    private void subProgram() throws SyntaxException
     {
 
         count++;
@@ -574,7 +581,7 @@ public class SyntaxAnalyzer
 
     private void syntaxError(String errorMsg) throws SyntaxException
     {
-        if (!DEBUG_MODE)
+        if (!this.DEBUG_MODE)
         {
             throw new SyntaxException(errorMsg);
         }
