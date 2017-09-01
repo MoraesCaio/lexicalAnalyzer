@@ -43,7 +43,7 @@ public class Tokenizer
      * @param lines Lines read from the source code file.
      * @throws NullPointerException In case, lines is null.
      */
-    public Tokenizer(List<String> lines, boolean DEBUG_MODE) throws NullPointerException
+    public Tokenizer(List<String> lines, boolean DEBUG_MODE) throws IllegalArgumentException
     {
         if(lines == null)
         {
@@ -80,29 +80,37 @@ public class Tokenizer
     /**
      * Main method. Iterates through the lines of source code whilst parsing.
      */
-    public void parse() throws LexicalException
+    public void parse()
     {
-        //Parsing
-        for (String line : lines)
+        try
         {
-            if (line.isEmpty())
+            //Parsing
+            for (String line : lines)
             {
+                if (line.isEmpty())
+                {
+                    lineNum += 1;
+                    continue;
+                }
+                parseLine(line);
                 lineNum += 1;
-                continue;
             }
-            parseLine(line);
-            lineNum += 1;
-        }
 
-        //Detecting unclosed comments or strings
-        if (onComment)
-        {
-            lexicalError("A comment was not closed.\nLine: " + (lastOpenCommentLine+1));
-        }
+            //Detecting unclosed comments or strings
+            if (onComment)
+            {
+                lexicalError("A comment was not closed.\nLine: " + (lastOpenCommentLine+1));
+            }
 
-        if (onString)
+            if (onString)
+            {
+                lexicalError("A string was not closed.\nLine: " + (lastOpenStringLine+1));
+            }
+        }
+        catch (LexicalException lexExc)
         {
-            lexicalError("A string was not closed.\nLine: " + (lastOpenStringLine+1));
+            System.out.println("An error ocurred:\n" + lexExc.getMessage());
+            lexExc.printStackTrace();
         }
     }
 
