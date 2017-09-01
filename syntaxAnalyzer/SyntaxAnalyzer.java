@@ -1,3 +1,5 @@
+package syntaxAnalyzer;
+
 import lexicalAnalyzer.Token;
 import java.util.List;
 
