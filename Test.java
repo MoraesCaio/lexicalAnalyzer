@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -33,11 +34,15 @@ public class Test
                 System.out.println(t + "\n");
             }
         }
-        catch (Exception e)
+        catch (IllegalArgumentException iaExc)
         {
-            System.out.println("Error:" + e.getMessage());
-            e.printStackTrace();
-            //System.out.println(System.getProperty("user.dir"));
+            System.out.println("Error: " + iaExc.getMessage());
+            iaExc.printStackTrace();
+        }
+        catch (IOException ioExc)
+        {
+            System.out.println("Error: " + ioExc.getMessage());
+            ioExc.printStackTrace();
         }
 
         System.out.println("Program has finished. Press <ENTER> to close.");
