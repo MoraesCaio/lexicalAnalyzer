@@ -1,19 +1,19 @@
 import lexicalAnalyzer.Token;
 import java.util.List;
 
-public class SyntacticAnalyzer
+public class SyntaxAnalyzer
 {
 
     private List<Token> tokens;
     private Token currentToken;
     private int count = 0;
 
-    public SyntacticAnalyzer(List<Token> tokens)
+    public SyntaxAnalyzer(List<Token> tokens)
     {
         this.tokens = tokens;
     }
 
-    public SyntacticAnalyzer()
+    public SyntaxAnalyzer()
     {
         this(null);
     }
