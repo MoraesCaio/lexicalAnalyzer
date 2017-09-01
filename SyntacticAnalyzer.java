@@ -210,12 +210,11 @@ public class SyntacticAnalyzer
         count++;
         currentToken = tokens.get(count);
         if(currentToken.getText().toLowerCase().equals("procedure"))
-
-
+        {
             count++;
             currentToken = tokens.get(count);
             if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
-
+            {
 
                 arguments();
                 varDeclaration();
