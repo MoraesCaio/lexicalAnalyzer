@@ -23,13 +23,13 @@ public class SyntacticAnalyzer {
 
     private void program() {
 
-        if(token.getString().toLowerCase().equals("program")) {
+        if(token.getText().toLowerCase().equals("program")) {
             count++;
             token = tokens.get(count);
             if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
                 count++;
                 token = tokens.get(count);
-                if(token.getString().toLowerCase().equals(";")) {
+                if(token.getText().toLowerCase().equals(";")) {
 
                     varDeclaration();
                     subProgramsDeclarationA();
@@ -37,7 +37,7 @@ public class SyntacticAnalyzer {
 
                     count++;
                     token = tokens.get(count);
-                    if(token.getString().toLowerCase().equals(".")) {
+                    if(token.getText().toLowerCase().equals(".")) {
                         //finish
                     }
                 }
@@ -58,7 +58,7 @@ public class SyntacticAnalyzer {
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals("var")) {
+        if(token.getText().toLowerCase().equals("var")) {
             varDeclarationListA();
         } else {
             //Error
@@ -70,13 +70,13 @@ public class SyntacticAnalyzer {
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals(":")) {
+        if(token.getText().toLowerCase().equals(":")) {
 
             type();
 
             count++;
             token = tokens.get(count);
-            if(token.getString().toLowerCase().equals(";")) {
+            if(token.getText().toLowerCase().equals(";")) {
 
                 varDeclarationListB();
             }
@@ -92,13 +92,13 @@ public class SyntacticAnalyzer {
 
             count++;
             token = tokens.get(count);
-            if (token.getString().toLowerCase().equals(":")) {
+            if (token.getText().toLowerCase().equals(":")) {
 
                 type();
 
                 count++;
                 token = tokens.get(count);
-                if (token.getString().toLowerCase().equals(";")) {
+                if (token.getText().toLowerCase().equals(";")) {
 
                     varDeclarationListB();
                 }
@@ -121,7 +121,7 @@ public class SyntacticAnalyzer {
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals(",")) {
+        if(token.getText().toLowerCase().equals(",")) {
 
             count++;
             token = tokens.get(count);
@@ -140,9 +140,9 @@ public class SyntacticAnalyzer {
 
         } else if(token.getClassification().equals(Token.Classifications.REAL.toString())) {
 
-        } else if(token.getString().toLowerCase().equals("false")) {
+        } else if(token.getText().toLowerCase().equals("false")) {
 
-        } else if(token.getString().toLowerCase().equals("true")) {
+        } else if(token.getText().toLowerCase().equals("true")) {
 
         }
     }
@@ -155,7 +155,7 @@ public class SyntacticAnalyzer {
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals("procedure")) {
+        if(token.getText().toLowerCase().equals("procedure")) {
 
             subProgram();
             subProgramsDeclarationB();
@@ -166,7 +166,7 @@ public class SyntacticAnalyzer {
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals("procedure")){
+        if(token.getText().toLowerCase().equals("procedure")){
 
             count++;
             token = tokens.get(count);
@@ -185,13 +185,13 @@ public class SyntacticAnalyzer {
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals("(")) {
+        if(token.getText().toLowerCase().equals("(")) {
 
             parameterListA();
 
             count++;
             token = tokens.get(count);
-            if(token.getString().toLowerCase().equals(")")) {
+            if(token.getText().toLowerCase().equals(")")) {
 
             }
         }
@@ -202,7 +202,7 @@ public class SyntacticAnalyzer {
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals(":")) {
+        if(token.getText().toLowerCase().equals(":")) {
             type();
             parameterListB();
         }
@@ -211,12 +211,12 @@ public class SyntacticAnalyzer {
     private void parameterListB() {
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals(";")) {
+        if(token.getText().toLowerCase().equals(";")) {
             indetifiersListA();
 
             count++;
             token = tokens.get(count);
-            if(token.getString().toLowerCase().equals(":")) {
+            if(token.getText().toLowerCase().equals(":")) {
                 type();
                 parameterListB();
             }
@@ -227,14 +227,14 @@ public class SyntacticAnalyzer {
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals("begin")) {
+        if(token.getText().toLowerCase().equals("begin")) {
         }
 
         opCommand();
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals("end")) {
+        if(token.getText().toLowerCase().equals("end")) {
         }
     }
 
@@ -251,7 +251,7 @@ public class SyntacticAnalyzer {
 
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals(";")) {
+        if(token.getText().toLowerCase().equals(";")) {
             command();
             commandListB();
         }
@@ -265,25 +265,25 @@ public class SyntacticAnalyzer {
 
             count++;
             token = tokens.get(count);
-            if(token.getString().toLowerCase().equals(":=")) {
+            if(token.getText().toLowerCase().equals(":=")) {
                 var();
             } else {
                 procedureActivationA();
             }
-        } else if(token.getString().toLowerCase().equals("if")) {
+        } else if(token.getText().toLowerCase().equals("if")) {
             expression();
             count++;
             token = tokens.get(count);
-            if(token.getString().toLowerCase().equals("if")) {
+            if(token.getText().toLowerCase().equals("if")) {
                 command();
                 partElse();
             }
 
-        } else if(token.getString().toLowerCase().equals("while")) {
+        } else if(token.getText().toLowerCase().equals("while")) {
             expression();
             count++;
             token = tokens.get(count);
-            if(token.getString().toLowerCase().equals("do")) {
+            if(token.getText().toLowerCase().equals("do")) {
                 command();
             }
 
@@ -295,7 +295,7 @@ public class SyntacticAnalyzer {
     private void partElse() {
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals("else")) {
+        if(token.getText().toLowerCase().equals("else")) {
             command();
         }
     }
@@ -319,7 +319,7 @@ public class SyntacticAnalyzer {
     private void procedureActivationB() {
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals("(")) {
+        if(token.getText().toLowerCase().equals("(")) {
             expressionListA();
         }
     }
@@ -332,7 +332,7 @@ public class SyntacticAnalyzer {
     private void expressionListB() {
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals(",")) {
+        if(token.getText().toLowerCase().equals(",")) {
             expression();
             expressionListB();
         }
@@ -351,7 +351,7 @@ public class SyntacticAnalyzer {
     private void simpleExpressionA() {
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals("-") || token.getString().toLowerCase().equals("+")) {
+        if(token.getText().toLowerCase().equals("-") || token.getText().toLowerCase().equals("+")) {
             sign();
             termA();
             simpleExpressionB();
@@ -392,9 +392,9 @@ public class SyntacticAnalyzer {
         if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
             count++;
             token = tokens.get(count);
-            if(token.getString().toLowerCase().equals("(")) {
+            if(token.getText().toLowerCase().equals("(")) {
                 expressionListA();
-                if(token.getString().toLowerCase().equals(")")) {
+                if(token.getText().toLowerCase().equals(")")) {
 
                 }
             }
@@ -404,11 +404,11 @@ public class SyntacticAnalyzer {
 
         } else if(token.getClassification().equals(Token.Classifications.INTEGER.toString())) {
 
-        } else if(token.getString().toLowerCase().equals("true")) {
+        } else if(token.getText().toLowerCase().equals("true")) {
 
-        } else if(token.getString().toLowerCase().equals("false")) {
+        } else if(token.getText().toLowerCase().equals("false")) {
 
-        } else if(token.getString().toLowerCase().equals("not")) {
+        } else if(token.getText().toLowerCase().equals("not")) {
             factor();
         }
     }
@@ -416,7 +416,7 @@ public class SyntacticAnalyzer {
     private void sign() {
         count++;
         token = tokens.get(count);
-        if(token.getString().toLowerCase().equals("+") || token.getString().toLowerCase().equals("-")) {
+        if(token.getText().toLowerCase().equals("+") || token.getText().toLowerCase().equals("-")) {
 
         }
     }

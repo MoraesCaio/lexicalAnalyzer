@@ -20,7 +20,7 @@ import java.util.List;
 public class Token {
 
     /*PROPERTIES*/
-    private String token;
+    private String text;
     private Integer lineNumber;
     private String classification;
 
@@ -35,30 +35,30 @@ public class Token {
 
     /**
      * CONSTRUCTORS
-     * @param token Text of the token.
+     * @param text Text of the token.
      * @param classification Classification of the token.
      * @param lineNumber Number of the line where the token was found.
      */
-    private Token(String token, String classification, Integer lineNumber)
+    private Token(String text, String classification, Integer lineNumber)
     {
-        this.token = token;
+        this.text = text;
         this.classification = classification;
         this.lineNumber = lineNumber+1;
     }
 
-    public Token(String token, Classifications classification, Integer lineNumber)
+    public Token(String text, Classifications classification, Integer lineNumber)
     {
-        this(token, classification.toString(), lineNumber);
+        this(text, classification.toString(), lineNumber);
     }
 
-    public Token(String token, Classifications classification)
+    public Token(String text, Classifications classification)
     {
-        this(token, classification.toString(), 0);
+        this(text, classification.toString(), 0);
     }
 
-    public Token(String token)
+    public Token(String text)
     {
-        this(token, Classifications.UNCLASSIFIED);
+        this(text, Classifications.UNCLASSIFIED);
     }
 
     public Token(){
@@ -71,12 +71,12 @@ public class Token {
      */
     @Override
     public String toString(){
-        return "TOKEN: " + token + '\n' +
+        return "TOKEN: " + text + '\n' +
         "CLASSIFICATION: " + classification + '\n' +
         "LINE: " + lineNumber;
     }
 
-    public String getString() {return token;}
+    public String getText() {return text;}
     public String getClassification() {return classification;}
 
 
