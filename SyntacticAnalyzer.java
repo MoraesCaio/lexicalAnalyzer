@@ -1,104 +1,130 @@
 import lexicalAnalyzer.Token;
 import java.util.List;
 
-public class SyntacticAnalyzer {
+public class SyntacticAnalyzer
+{
 
     private List<Token> tokens;
-    private Token token;
+    private Token currentToken;
     private int count = 0;
 
-    public SyntacticAnalyzer(List<Token> tokens) {
+    public SyntacticAnalyzer(List<Token> tokens)
+    {
         this.tokens = tokens;
     }
 
-    public SyntacticAnalyzer() {
+    public SyntacticAnalyzer()
+    {
         this(null);
     }
 
-    public void run() {
+    public void run()
+    {
 
-        token = tokens.get(count);
+        currentToken = tokens.get(count);
         program();
     }
 
-    private void program() {
+    private void program()
+    {
 
-        if(token.getText().toLowerCase().equals("program")) {
+        if(currentToken.getText().toLowerCase().equals("program"))
+        {
             count++;
-            token = tokens.get(count);
-            if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
+            currentToken = tokens.get(count);
+            if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
+            {
                 count++;
-                token = tokens.get(count);
-                if(token.getText().toLowerCase().equals(";")) {
+                currentToken = tokens.get(count);
+                if(currentToken.getText().toLowerCase().equals(";"))
+                {
 
                     varDeclaration();
                     subProgramsDeclarationA();
                     compoundCommand();
 
                     count++;
-                    token = tokens.get(count);
-                    if(token.getText().toLowerCase().equals(".")) {
+                    currentToken = tokens.get(count);
+                    if(currentToken.getText().toLowerCase().equals("."))
+                    {
                         //finish
                     }
                 }
-                else {
+
+                else
+                {
                     //Error
                 }
             }
-            else {
+
+            else
+            {
                 //Error
             }
         }
-        else {
+
+        else
+        {
             //Error
         }
     }
 
-    private void varDeclaration() {
+    private void varDeclaration()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals("var")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals("var"))
+        {
             varDeclarationListA();
-        } else {
+        }
+        else
+        {
             //Error
         }
     }
 
-    private void varDeclarationListA() {
+    private void varDeclarationListA()
+    {
         indetifiersListA();
 
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals(":")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals(":"))
+        {
 
             type();
 
             count++;
-            token = tokens.get(count);
-            if(token.getText().toLowerCase().equals(";")) {
+            currentToken = tokens.get(count);
+            if(currentToken.getText().toLowerCase().equals(";"))
+            {
 
                 varDeclarationListB();
             }
         }
     }
 
-    private void varDeclarationListB() {
+    private void varDeclarationListB()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
+        {
             indetifiersListA();
 
             count++;
-            token = tokens.get(count);
-            if (token.getText().toLowerCase().equals(":")) {
+            currentToken = tokens.get(count);
+            if (currentToken.getText().toLowerCase().equals(":"))
+            {
 
                 type();
 
                 count++;
-                token = tokens.get(count);
-                if (token.getText().toLowerCase().equals(";")) {
+                currentToken = tokens.get(count);
+                if (currentToken.getText().toLowerCase().equals(";"))
+                {
 
                     varDeclarationListB();
                 }
@@ -106,71 +132,90 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void indetifiersListA() {
+    private void indetifiersListA()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
+        {
 
             indetifiersListB();
 
         }
     }
 
-    private void indetifiersListB() {
+    private void indetifiersListB()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals(",")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals(","))
+        {
 
             count++;
-            token = tokens.get(count);
-            if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
+            currentToken = tokens.get(count);
+            if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
+            {
 
                 indetifiersListB();
             }
         }
     }
 
-    private void type() {
+    private void type()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.INTEGER.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.INTEGER.toString()))
+        {
 
-        } else if(token.getClassification().equals(Token.Classifications.REAL.toString())) {
+        }
+        else if(currentToken.getClassification().equals(Token.Classifications.REAL.toString()))
+        {
 
-        } else if(token.getText().toLowerCase().equals("false")) {
+        }
+        else if(currentToken.getText().toLowerCase().equals("false"))
+        {
 
-        } else if(token.getText().toLowerCase().equals("true")) {
+        }
+        else if(currentToken.getText().toLowerCase().equals("true"))
+        {
 
         }
     }
 
-    private void subProgramsDeclarationA() {
+    private void subProgramsDeclarationA()
+    {
         subProgramsDeclarationB();
     }
 
-    private void subProgramsDeclarationB() {
+    private void subProgramsDeclarationB()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals("procedure")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals("procedure"))
+        {
 
             subProgram();
             subProgramsDeclarationB();
         }
     }
 
-    private void subProgram() {
+    private void subProgram()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals("procedure")){
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals("procedure"))
+
 
             count++;
-            token = tokens.get(count);
-            if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())){
+            currentToken = tokens.get(count);
+            if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
+
 
                 arguments();
                 varDeclaration();
@@ -181,264 +226,338 @@ public class SyntacticAnalyzer {
 
     }
 
-    private void arguments() {
+    private void arguments()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals("(")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals("("))
+        {
 
             parameterListA();
 
             count++;
-            token = tokens.get(count);
-            if(token.getText().toLowerCase().equals(")")) {
+            currentToken = tokens.get(count);
+            if(currentToken.getText().toLowerCase().equals(")"))
+            {
 
             }
         }
     }
 
-    private void parameterListA() {
+    private void parameterListA()
+    {
         indetifiersListA();
 
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals(":")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals(":"))
+        {
             type();
             parameterListB();
         }
     }
 
-    private void parameterListB() {
+    private void parameterListB()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals(";")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals(";"))
+        {
             indetifiersListA();
 
             count++;
-            token = tokens.get(count);
-            if(token.getText().toLowerCase().equals(":")) {
+            currentToken = tokens.get(count);
+            if(currentToken.getText().toLowerCase().equals(":"))
+            {
                 type();
                 parameterListB();
             }
         }
     }
 
-    private void compoundCommand() {
+    private void compoundCommand()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals("begin")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals("begin"))
+        {
         }
 
         opCommand();
 
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals("end")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals("end"))
+        {
         }
     }
 
-    private void opCommand() {
+    private void opCommand()
+    {
         commandListA();
     }
 
-    private void commandListA() {
+    private void commandListA()
+    {
         command();
         commandListB();
     }
 
-    private void commandListB() {
+    private void commandListB()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals(";")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals(";"))
+        {
             command();
             commandListB();
         }
     }
 
-    private void command() {
+    private void command()
+    {
 
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
+        {
 
             count++;
-            token = tokens.get(count);
-            if(token.getText().toLowerCase().equals(":=")) {
+            currentToken = tokens.get(count);
+            if(currentToken.getText().toLowerCase().equals(":="))
+            {
                 var();
-            } else {
+            }
+            else
+            {
                 procedureActivationA();
             }
-        } else if(token.getText().toLowerCase().equals("if")) {
+        }
+        else if(currentToken.getText().toLowerCase().equals("if"))
+        {
             expression();
             count++;
-            token = tokens.get(count);
-            if(token.getText().toLowerCase().equals("if")) {
+            currentToken = tokens.get(count);
+            if(currentToken.getText().toLowerCase().equals("if"))
+            {
                 command();
                 partElse();
             }
 
-        } else if(token.getText().toLowerCase().equals("while")) {
+        }
+        else if(currentToken.getText().toLowerCase().equals("while"))
+        {
             expression();
             count++;
-            token = tokens.get(count);
-            if(token.getText().toLowerCase().equals("do")) {
+            currentToken = tokens.get(count);
+            if(currentToken.getText().toLowerCase().equals("do"))
+            {
                 command();
             }
 
-        } else {
+        }
+        else
+        {
             compoundCommand();
         }
     }
 
-    private void partElse() {
+    private void partElse()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals("else")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals("else"))
+        {
             command();
         }
     }
 
-    private void var() {
+    private void var()
+    {
         count++;
-        token = tokens.get(count);
-        if (token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
+        currentToken = tokens.get(count);
+        if (currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
+        {
 
         }
     }
 
-    private void procedureActivationA() {
+    private void procedureActivationA()
+    {
         count++;
-        token = tokens.get(count);
-        if (token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
+        currentToken = tokens.get(count);
+        if (currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
+        {
             procedureActivationB();
         }
     }
 
-    private void procedureActivationB() {
+    private void procedureActivationB()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals("(")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals("("))
+        {
             expressionListA();
         }
     }
 
-    private void expressionListA() {
+    private void expressionListA()
+    {
         expression();
         expressionListB();
     }
 
-    private void expressionListB() {
+    private void expressionListB()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals(",")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals(","))
+        {
             expression();
             expressionListB();
         }
     }
 
-    private void expression() {
+    private void expression()
+    {
         simpleExpressionA();
 
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.RELATIONAL.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.RELATIONAL.toString()))
+        {
             simpleExpressionA();
         }
     }
 
-    private void simpleExpressionA() {
+    private void simpleExpressionA()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals("-") || token.getText().toLowerCase().equals("+")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals("-") || currentToken.getText().toLowerCase().equals("+"))
+        {
             sign();
             termA();
             simpleExpressionB();
-        } else {
+        }
+        else
+        {
             termA();
             simpleExpressionB();
         }
     }
 
-    private void simpleExpressionB() {
+    private void simpleExpressionB()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.ADDITION.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.ADDITION.toString()))
+        {
             opAdditive();
             termA();
             simpleExpressionB();
         }
     }
 
-    private void termA() {
+    private void termA()
+    {
         factor();
         termB();
     }
 
-    private void termB() {
+    private void termB()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.MULTIPLICATION.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.MULTIPLICATION.toString()))
+        {
             opMultiplicative();
             factor();
             termB();
         }
     }
 
-    private void factor() {
+    private void factor()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.IDENTIFIER.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
+        {
             count++;
-            token = tokens.get(count);
-            if(token.getText().toLowerCase().equals("(")) {
+            currentToken = tokens.get(count);
+            if(currentToken.getText().toLowerCase().equals("("))
+            {
                 expressionListA();
-                if(token.getText().toLowerCase().equals(")")) {
+                if(currentToken.getText().toLowerCase().equals(")"))
+                {
 
                 }
             }
-        } else if(token.getClassification().equals(Token.Classifications.INTEGER.toString())) {
+        }
+        else if(currentToken.getClassification().equals(Token.Classifications.INTEGER.toString()))
+        {
 
-        } else if(token.getClassification().equals(Token.Classifications.REAL.toString())) {
+        }
+        else if(currentToken.getClassification().equals(Token.Classifications.REAL.toString()))
+        {
 
-        } else if(token.getClassification().equals(Token.Classifications.INTEGER.toString())) {
+        }
+        else if(currentToken.getClassification().equals(Token.Classifications.INTEGER.toString()))
+        {
 
-        } else if(token.getText().toLowerCase().equals("true")) {
+        }
+        else if(currentToken.getText().toLowerCase().equals("true"))
+        {
 
-        } else if(token.getText().toLowerCase().equals("false")) {
+        }
+        else if(currentToken.getText().toLowerCase().equals("false"))
+        {
 
-        } else if(token.getText().toLowerCase().equals("not")) {
+        }
+        else if(currentToken.getText().toLowerCase().equals("not"))
+        {
             factor();
         }
     }
 
-    private void sign() {
+    private void sign()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getText().toLowerCase().equals("+") || token.getText().toLowerCase().equals("-")) {
+        currentToken = tokens.get(count);
+        if(currentToken.getText().toLowerCase().equals("+") || currentToken.getText().toLowerCase().equals("-"))
+        {
 
         }
     }
 
-    private void opRelational() {
+    private void opRelational()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.RELATIONAL.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.RELATIONAL.toString()))
+        {
         }
     }
 
-    private void opAdditive() {
+    private void opAdditive()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.ADDITION.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.ADDITION.toString()))
+        {
         }
     }
 
-    private void opMultiplicative() {
+    private void opMultiplicative()
+    {
         count++;
-        token = tokens.get(count);
-        if(token.getClassification().equals(Token.Classifications.MULTIPLICATION.toString())) {
+        currentToken = tokens.get(count);
+        if(currentToken.getClassification().equals(Token.Classifications.MULTIPLICATION.toString()))
+        {
         }
     }
 }
