@@ -259,6 +259,10 @@ public class Tokenizer
         {
             tokens.add(new Token(sb.toString(), Token.Classifications.KEYWORD, lineNum));
         }
+        else if(Token.booleanValues.contains(sb.toString().toLowerCase()))
+        {
+            tokens.add(new Token(sb.toString(), Token.Classifications.BOOLEAN, lineNum));
+        }
         else if(sb.toString().toLowerCase().equals(Token.additionOperator))
         {
             tokens.add(new Token(sb.toString(), Token.Classifications.ADDITION, lineNum));

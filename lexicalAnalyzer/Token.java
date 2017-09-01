@@ -27,6 +27,7 @@ public class Token {
 
     /*VALUES*/
     final static List<String> keywords = Arrays.asList("program", "var", "integer", "real", "boolean", "procedure", "begin", "end", "if", "then", "else", "while", "do", "not");
+    final static List<String> booleanValues = Arrays.asList("true", "false");
     final static String additionOperator = "or";
     final static String multiplicationOperator = "and";
     final static String accChars = "_.:;,<>=+-/*(){}\' \t\n";
@@ -88,6 +89,7 @@ public class Token {
         IDENTIFIER("identifier"), //[a..z] ([a..z]|[0..9]|'_')*
         INTEGER("integer"), //[0..9]+
         REAL("real"), //[0..9]*.[0..9]+
+        BOOLEAN("boolean"),
         COMPLEX("complex"), //[REAL|INTEGER]i[+|-]?[REAL|INTEGER]
         DELIMITER("delimiter"), //,;:.()
         ASSIGNMENT("assignment"), //:=
