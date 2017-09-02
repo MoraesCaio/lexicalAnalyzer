@@ -79,6 +79,7 @@ public class Token {
 
     public String getText() {return text;}
     public String getClassification() {return classification;}
+    public Integer getLineNumber() {return lineNumber;}
 
 
     /**
