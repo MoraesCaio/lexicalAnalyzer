@@ -53,20 +53,17 @@ public class SyntaxAnalyzer
     {
         if(currentToken.getText().toLowerCase().equals("program"))
         {
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
             {
-                count++;
-                currentToken = tokens.get(count);
+                currentToken = getNextToken();
                 if(currentToken.getText().toLowerCase().equals(";"))
                 {
                     varDeclaration();
                     subProgramsDeclarationA();
                     compoundCommand();
 
-                    count++;
-                    currentToken = tokens.get(count);
+                    currentToken = getNextToken();
                     if(currentToken.getText().toLowerCase().equals("."))
                     {
                         //finish
@@ -94,8 +91,7 @@ public class SyntaxAnalyzer
 
     private void varDeclaration() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals("var"))
         {
             varDeclarationListA();
@@ -109,15 +105,13 @@ public class SyntaxAnalyzer
     {
         identifiersListA();
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals(":"))
         {
 
             type();
 
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getText().toLowerCase().equals(";"))
             {
 
@@ -135,22 +129,19 @@ public class SyntaxAnalyzer
     private void varDeclarationListB() throws SyntaxException
     {
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
             count--;
             identifiersListA();
 
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if (currentToken.getText().toLowerCase().equals(":"))
             {
 
                 type();
 
-                count++;
-                currentToken = tokens.get(count);
+                currentToken = getNextToken();
                 if (currentToken.getText().toLowerCase().equals(";"))
                 {
 
@@ -171,8 +162,7 @@ public class SyntaxAnalyzer
     private void identifiersListA() throws SyntaxException
     {
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
 
@@ -187,13 +177,11 @@ public class SyntaxAnalyzer
     private void identifiersListB() throws SyntaxException
     {
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals(","))
         {
 
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
             {
 
@@ -210,8 +198,7 @@ public class SyntaxAnalyzer
     private void type() throws SyntaxException
     {
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.INTEGER.toString()))
         {
 
@@ -238,8 +225,7 @@ public class SyntaxAnalyzer
     private void subProgramsDeclarationB() throws SyntaxException
     {
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals("procedure"))
         {
             count--;
@@ -253,19 +239,16 @@ public class SyntaxAnalyzer
     private void subProgram() throws SyntaxException
     {
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals("procedure"))
         {
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
             {
 
                 arguments();
 
-                count++;
-                currentToken = tokens.get(count);
+                currentToken = getNextToken();
                 if(currentToken.getText().toLowerCase().equals(";")) {
 
                     varDeclaration();
@@ -289,15 +272,13 @@ public class SyntaxAnalyzer
     private void arguments() throws SyntaxException
     {
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals("("))
         {
 
             parameterListA();
 
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getText().toLowerCase().equals(")"))
             {
 
@@ -314,8 +295,7 @@ public class SyntaxAnalyzer
     {
         identifiersListA();
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals(":"))
         {
             type();
@@ -328,14 +308,12 @@ public class SyntaxAnalyzer
 
     private void parameterListB() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals(";"))
         {
             identifiersListA();
 
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getText().toLowerCase().equals(":"))
             {
                 type();
@@ -352,14 +330,12 @@ public class SyntaxAnalyzer
     private void compoundCommand() throws SyntaxException
     {
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals("begin"))
         {
             opCommand();
 
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getText().toLowerCase().equals("end"))
             {
             } else {
@@ -374,8 +350,7 @@ public class SyntaxAnalyzer
 
     private void opCommand() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(!currentToken.getText().toLowerCase().equals("end")) {
 
             count--;
@@ -394,8 +369,7 @@ public class SyntaxAnalyzer
     private void commandListB() throws SyntaxException
     {
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals(";"))
         {
             command();
@@ -408,13 +382,11 @@ public class SyntaxAnalyzer
     private void command() throws SyntaxException
     {
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
 
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getText().toLowerCase().equals(":="))
             {
                 expression();
@@ -428,8 +400,7 @@ public class SyntaxAnalyzer
         else if(currentToken.getText().toLowerCase().equals("if"))
         {
             expression();
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getText().toLowerCase().equals("then"))
             {
                 command();
@@ -443,8 +414,7 @@ public class SyntaxAnalyzer
         else if(currentToken.getText().toLowerCase().equals("while"))
         {
             expression();
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getText().toLowerCase().equals("do"))
             {
                 command();
@@ -463,8 +433,7 @@ public class SyntaxAnalyzer
 
     private void partElse() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals("else"))
         {
             command();
@@ -475,8 +444,7 @@ public class SyntaxAnalyzer
 
     private void var() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if (currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
 
@@ -487,8 +455,7 @@ public class SyntaxAnalyzer
 
     private void procedureActivationA() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if (currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
             procedureActivationB();
@@ -500,14 +467,12 @@ public class SyntaxAnalyzer
 
     private void procedureActivationB() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals("("))
         {
             expressionListA();
 
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getText().toLowerCase().equals(")")) {
 
             } else {
@@ -527,8 +492,7 @@ public class SyntaxAnalyzer
 
     private void expressionListB() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals(","))
         {
             expression();
@@ -542,8 +506,7 @@ public class SyntaxAnalyzer
     {
         simpleExpressionA();
 
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.RELATIONAL.toString()))
         {
             simpleExpressionA();
@@ -554,8 +517,7 @@ public class SyntaxAnalyzer
 
     private void simpleExpressionA() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals("-") || currentToken.getText().toLowerCase().equals("+"))
         {
             termA();
@@ -571,8 +533,7 @@ public class SyntaxAnalyzer
 
     private void simpleExpressionB() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.ADDITION.toString()))
         {
             termA();
@@ -590,8 +551,7 @@ public class SyntaxAnalyzer
 
     private void termB() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.MULTIPLICATION.toString()))
         {
             factor();
@@ -603,18 +563,15 @@ public class SyntaxAnalyzer
 
     private void factor() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
-            count++;
-            currentToken = tokens.get(count);
+            currentToken = getNextToken();
             if(currentToken.getText().toLowerCase().equals("("))
             {
                 expressionListA();
 
-                count++;
-                currentToken = tokens.get(count);
+                currentToken = getNextToken();
                 if(currentToken.getText().toLowerCase().equals(")"))
                 {
 
@@ -654,8 +611,7 @@ public class SyntaxAnalyzer
 
     private void sign() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals("+") || currentToken.getText().toLowerCase().equals("-"))
         {
 
@@ -667,8 +623,7 @@ public class SyntaxAnalyzer
 
     private void opRelational() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.RELATIONAL.toString()))
         {
         } else {
@@ -680,8 +635,7 @@ public class SyntaxAnalyzer
 
     private void opAdditive() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.ADDITION.toString()))
         {
         }  else {
@@ -692,14 +646,18 @@ public class SyntaxAnalyzer
 
     private void opMultiplicative() throws SyntaxException
     {
-        count++;
-        currentToken = tokens.get(count);
+        currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.MULTIPLICATION.toString()))
         {
         }  else {
             count--;
             syntaxError("Error line " + currentToken.getLineNumber() + ": Multiplicative symbol was not found!" );
         }
+    }
+
+    private Token getNextToken()
+    {
+        return tokens.get(++count);
     }
 
     private void syntaxError(String errorMsg) throws SyntaxException
