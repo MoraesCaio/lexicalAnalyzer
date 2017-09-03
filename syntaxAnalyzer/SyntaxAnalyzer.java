@@ -614,9 +614,13 @@ public class SyntaxAnalyzer
         }
     }
 
-    private Token getNextToken()
+    private Token getNextToken() throws SyntaxException
     {
-        return tokens.get(++count);
+        count++;
+        if(count >= tokens.size()){
+            syntaxError("Error line " + currentToken.getLineNumber() + ": No more tokens to be read.");
+        }
+        return tokens.get(count);
     }
 
     private void syntaxError(String errorMsg) throws SyntaxException
