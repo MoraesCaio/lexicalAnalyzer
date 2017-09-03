@@ -36,7 +36,6 @@ public class SyntaxAnalyzer
 
     public void run()
     {
-        currentToken = tokens.get(count);
         try
         {
             program();
@@ -51,41 +50,41 @@ public class SyntaxAnalyzer
 
     private void program() throws SyntaxException
     {
-        if(currentToken.getText().toLowerCase().equals("program"))
-        {
-            currentToken = getNextToken();
-            if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
-            {
-                currentToken = getNextToken();
-                if(currentToken.getText().toLowerCase().equals(";"))
-                {
-                    varDeclaration();
-                    subProgramsDeclarationA();
-                    compoundCommand();
-
-                    currentToken = getNextToken();
-                    if(currentToken.getText().toLowerCase().equals("."))
-                    {
-                        //finish
-                    }
-                    else {
-                        syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol '.' was not found!" );
-                    }
-                }
-                else
-                {
-                    syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ';' was not found!" );
-                }
-            }
-            else
-            {
-                syntaxError("Error line " + currentToken.getLineNumber() + ": Invalid identifier for program!" );
-            }
-        }
-        else
+        //keyword: 'program'
+        currentToken = tokens.get(count); //count == 0
+        if (!currentToken.getText().toLowerCase().equals("program"))
         {
             syntaxError("Error line " + currentToken.getLineNumber() + ": Keyword 'program' was not found!" );
         }
+
+        //identifier: name of the program
+        currentToken = getNextToken();
+        if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
+        {
+            syntaxError("Error line " + currentToken.getLineNumber() + ": Invalid identifier for program!" );
+        }
+
+        //identifier: ';'
+        currentToken = getNextToken();
+        if (!currentToken.getText().toLowerCase().equals(";"))
+        {
+            syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ';' was not found!" );
+        }
+
+        //control flow
+        varDeclaration();
+        subProgramsDeclarationA();
+        compoundCommand();
+
+        //delimiter: '.'
+        currentToken = getNextToken();
+        if (!currentToken.getText().toLowerCase().equals("."))
+        {
+            syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol '.' was not found!" );
+        }
+
+        //Ending without errors
+
     }
 
 
