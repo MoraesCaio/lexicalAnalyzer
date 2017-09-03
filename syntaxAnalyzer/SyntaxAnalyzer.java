@@ -3,6 +3,8 @@ package syntaxAnalyzer;
 import lexicalAnalyzer.Token;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SyntaxAnalyzer
 {
@@ -94,7 +96,9 @@ public class SyntaxAnalyzer
         if(currentToken.getText().toLowerCase().equals("var"))
         {
             varDeclarationListA();
-        } else {
+        }
+        else
+        {
             count--;
         }
     }
@@ -196,20 +200,13 @@ public class SyntaxAnalyzer
 
     private void type() throws SyntaxException
     {
-
         currentToken = getNextToken();
-        if(currentToken.getClassification().equals(Token.Classifications.INTEGER.toString()))
-        {
-
-        }
-        else if(currentToken.getClassification().equals(Token.Classifications.REAL.toString()))
-        {
-
-        }
-        else if(currentToken.getClassification().equals(Token.Classifications.BOOLEAN.toString()))
-        {
-
-        } else {
+        List<String> types = Arrays.asList(
+                Token.Classifications.INTEGER.toString(),
+                Token.Classifications.REAL.toString(),
+                Token.Classifications.BOOLEAN.toString()
+        );
+        if (!types.contains(currentToken.getClassification())) {
             count--;
             syntaxError("Error line " + currentToken.getLineNumber() + ": Invalid type!");
         }
