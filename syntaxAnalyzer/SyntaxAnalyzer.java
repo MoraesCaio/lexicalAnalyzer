@@ -56,21 +56,21 @@ public class SyntaxAnalyzer
         currentToken = tokens.get(count); //count == 0
         if (!currentToken.getText().toLowerCase().equals("program"))
         {
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Keyword 'program' was not found!" );
+            syntaxError("Keyword 'program' was not found!" );
         }
 
         //identifier: name of the program
         currentToken = getNextToken();
         if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Invalid identifier for program!" );
+            syntaxError("Invalid identifier for program!" );
         }
 
         //identifier: ';'
         currentToken = getNextToken();
         if (!currentToken.getText().toLowerCase().equals(";"))
         {
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ';' was not found!" );
+            syntaxError("Symbol ';' was not found!" );
         }
 
         //control flow
@@ -82,7 +82,7 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if (!currentToken.getText().toLowerCase().equals("."))
         {
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol '.' was not found!" );
+            syntaxError("Symbol '.' was not found!" );
         }
 
         //Ending without errors
@@ -111,7 +111,7 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if (!currentToken.getText().toLowerCase().equals(":"))
         {
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ':' was not found!" );
+            syntaxError("Symbol ':' was not found!" );
         }
 
         type();
@@ -119,7 +119,7 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if (!currentToken.getText().toLowerCase().equals(";"))
         {
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ';' was not found!" );
+            syntaxError("Symbol ';' was not found!" );
         }
 
         currentToken = getNextToken();
@@ -138,7 +138,7 @@ public class SyntaxAnalyzer
         if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Invalid identifier!" );
+            syntaxError("Invalid identifier!" );
         }
 
         identifiersListB();
@@ -157,7 +157,7 @@ public class SyntaxAnalyzer
         if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Invalid identifier!" );
+            syntaxError("Invalid identifier!" );
         }
 
         identifiersListB();
@@ -175,7 +175,7 @@ public class SyntaxAnalyzer
 
         if (!types.contains(currentToken.getClassification())) {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Invalid type!");
+            syntaxError("Invalid type!");
         }
 
     }
@@ -206,14 +206,14 @@ public class SyntaxAnalyzer
         if (!currentToken.getText().toLowerCase().equals("procedure"))
         {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Keyword 'procedure' was not found!" );
+            syntaxError("Keyword 'procedure' was not found!" );
         }
 
         currentToken = getNextToken();
         if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Invalid identifier!" );
+            syntaxError("Invalid identifier!" );
         }
 
         arguments();
@@ -222,7 +222,7 @@ public class SyntaxAnalyzer
         if (!currentToken.getText().toLowerCase().equals(";"))
         {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ';' was not found!" );
+            syntaxError("Symbol ';' was not found!" );
         }
 
         varDeclaration();
@@ -245,7 +245,7 @@ public class SyntaxAnalyzer
             if (!currentToken.getText().toLowerCase().equals(")"))
             {
                 count--;
-                syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ')' was not found!" );
+                syntaxError("Symbol ')' was not found!" );
             }
         }
     }
@@ -261,7 +261,7 @@ public class SyntaxAnalyzer
             parameterListB();
         } else {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ':' was not found!" );
+            syntaxError("Symbol ':' was not found!" );
         }
     }
 
@@ -279,7 +279,7 @@ public class SyntaxAnalyzer
                 parameterListB();
             } else {
                 count--;
-                syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ':' was not found!" );
+                syntaxError("Symbol ':' was not found!" );
             }
         } else {
             count--;
@@ -299,11 +299,11 @@ public class SyntaxAnalyzer
             {
             } else {
                 count--;
-                syntaxError("Error line " + currentToken.getLineNumber() + ": Keyword 'End was not found!" );
+                syntaxError("Keyword 'End was not found!" );
             }
         } else {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Keyword 'Begin' was not found!" );
+            syntaxError("Keyword 'Begin' was not found!" );
         }
     }
 
@@ -366,7 +366,7 @@ public class SyntaxAnalyzer
                 partElse();
             } else {
                 count--;
-                syntaxError("Error line " + currentToken.getLineNumber() + ": Keyword 'Then' was not found!" );
+                syntaxError("Keyword 'Then' was not found!" );
             }
 
         }
@@ -379,7 +379,7 @@ public class SyntaxAnalyzer
                 command();
             } else {
                 count--;
-                syntaxError("Error line " + currentToken.getLineNumber() + ": Keyword 'do' was not found!" );
+                syntaxError("Keyword 'do' was not found!" );
             }
 
         }
@@ -420,7 +420,7 @@ public class SyntaxAnalyzer
             procedureActivationB();
         } else {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Invalid identifier!" );
+            syntaxError("Invalid identifier!" );
         }
     }
 
@@ -436,7 +436,7 @@ public class SyntaxAnalyzer
 
             } else {
                 count--;
-                syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ')' was not found!" );
+                syntaxError("Symbol ')' was not found!" );
             }
         } else {
             count--;
@@ -537,7 +537,7 @@ public class SyntaxAnalyzer
                 }
                 else {
                     count--;
-                    syntaxError("Error line " + currentToken.getLineNumber() + ": Symbol ')' was not found!" );
+                    syntaxError("Symbol ')' was not found!" );
                 }
             } else {
                 count--;
@@ -564,7 +564,7 @@ public class SyntaxAnalyzer
             factor();
         } else {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": wrong factor" );
+            syntaxError("wrong factor" );
         }
     }
 
@@ -576,7 +576,7 @@ public class SyntaxAnalyzer
 
         } else {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Sign was not found!" );
+            syntaxError("Sign was not found!" );
         }
     }
 
@@ -587,7 +587,7 @@ public class SyntaxAnalyzer
         {
         } else {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Relational symbol was not found!" );
+            syntaxError("Relational symbol was not found!" );
         }
 
     }
@@ -599,7 +599,7 @@ public class SyntaxAnalyzer
         {
         }  else {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Addition symbol was not found!" );
+            syntaxError("Addition symbol was not found!" );
         }
     }
 
@@ -610,7 +610,7 @@ public class SyntaxAnalyzer
         {
         }  else {
             count--;
-            syntaxError("Error line " + currentToken.getLineNumber() + ": Multiplicative symbol was not found!" );
+            syntaxError("Multiplicative symbol was not found!" );
         }
     }
 
@@ -618,7 +618,7 @@ public class SyntaxAnalyzer
     {
         count++;
         if(count >= tokens.size()){
-            syntaxError("Error line " + currentToken.getLineNumber() + ": No more tokens to be read.");
+            syntaxError("No more tokens to be read.");
         }
         return tokens.get(count);
     }
@@ -629,7 +629,7 @@ public class SyntaxAnalyzer
         {
             throw new SyntaxException(errorMsg);
         }
-        System.out.println(errorMsg);
+        System.out.println("Syntax Error! Line " + currentToken.getLineNumber() + ":\n" + errorMsg);
     }
 
 }
