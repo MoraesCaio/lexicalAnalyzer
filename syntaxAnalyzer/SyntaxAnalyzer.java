@@ -1,12 +1,13 @@
 package syntaxAnalyzer;
 
 import lexicalAnalyzer.Token;
-import java.util.List;
+
+import java.util.ArrayList;
 
 public class SyntaxAnalyzer
 {
     /*PROPERTIES*/
-    private List<Token> tokens;
+    private ArrayList<Token> tokens;
     private Token currentToken;
     private int count = 0;
     private boolean DEBUG_MODE;
@@ -16,20 +17,20 @@ public class SyntaxAnalyzer
      * CONSTRUCTORS
      * @param tokens
      */
-    public SyntaxAnalyzer(List<Token> tokens, boolean DEBUG_MODE)
+    public SyntaxAnalyzer(ArrayList<Token> tokens, boolean DEBUG_MODE)
     {
         this.tokens = tokens;
         this.DEBUG_MODE = DEBUG_MODE;
     }
 
-    public SyntaxAnalyzer(List<Token> tokens)
+    public SyntaxAnalyzer(ArrayList<Token> tokens)
     {
         this(tokens, false);
     }
 
     public SyntaxAnalyzer()
     {
-        this(null);
+        this(new ArrayList<Token>());
     }
 
 
