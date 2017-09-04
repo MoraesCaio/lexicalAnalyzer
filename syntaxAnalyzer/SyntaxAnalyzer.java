@@ -423,7 +423,8 @@ public class SyntaxAnalyzer
         }
         else
         {
-            expressionListA();
+            expression();
+            expressionListB();
 
             currentToken = getNextToken();
             if (!currentToken.getText().equals(")"))
