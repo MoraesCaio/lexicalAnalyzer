@@ -1,10 +1,23 @@
 package syntaxAnalyzer;
 
 import lexicalAnalyzer.Token;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
+/**
+ * Syntax Analyzer for pascal. It reads a ArrayList<Token> looking for syntax errors. This class and package are meant
+ * to be used side-by-side with lexicalAnalyzer package. The CFG is explained just before each method. Each method is
+ * either a direct representation of an entity contained on the CFG, or the representation of its recursive part.
+ *
+ * Created on 04/09/17 by
+ *
+ * Caio Moraes
+ * GitHub: MoraesCaio
+ * Email: caiomoraes
+ *
+ * Janyelson Oliveira
+ * GitHub: janyelson
+ * Email: janyelsonvictor@gmail.com
+ */
 
 public class SyntaxAnalyzer
 {
@@ -50,6 +63,14 @@ public class SyntaxAnalyzer
     }
 
 
+    /**
+     * program programID;
+     *  VariablesDeclaration()
+     *  SubProgramsDeclaration()
+     *  CompoundCommand()
+     * .
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void program() throws SyntaxException
     {
         //keyword: 'program'
@@ -90,6 +111,10 @@ public class SyntaxAnalyzer
     }
 
 
+    /**
+     * Var varDeclarationListA() | e
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void varDeclaration() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -104,10 +129,14 @@ public class SyntaxAnalyzer
     }
 
 
+    /**
+     * (identifiersListA():type();)*
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void varDeclarationListA() throws SyntaxException
     {
         identifiersListA();
-
+        
         currentToken = getNextToken();
         if (!currentToken.getText().equals(":"))
         {
@@ -132,6 +161,11 @@ public class SyntaxAnalyzer
         varDeclarationListA();
     }
 
+
+    /**
+     * id identifiersListB()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void identifiersListA() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -143,6 +177,11 @@ public class SyntaxAnalyzer
         identifiersListB();
     }
 
+
+    /**
+     * (, id)*
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void identifiersListB() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -161,6 +200,11 @@ public class SyntaxAnalyzer
         identifiersListB();
     }
 
+
+    /**
+     * Accepted types: real, integer and boolean.
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void type() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -170,6 +214,11 @@ public class SyntaxAnalyzer
 
     }
 
+
+    /**
+     * procedure subProgram()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void subProgramsDeclaration() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -181,6 +230,14 @@ public class SyntaxAnalyzer
         }
     }
 
+
+    /**
+     * procedure id arguments();
+     *  variablesDeclaration()
+     *  subProgramsDeclaration()
+     *  CompoundCommand()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void subProgram() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -211,6 +268,11 @@ public class SyntaxAnalyzer
         compoundCommand();
     }
 
+
+    /**
+     * (parameterListA())
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void arguments() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -230,6 +292,11 @@ public class SyntaxAnalyzer
         }
     }
 
+
+    /**
+     * identifiersListA():type() parameterListB()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void parameterListA() throws SyntaxException
     {
         identifiersListA();
@@ -244,6 +311,11 @@ public class SyntaxAnalyzer
         parameterListB();
     }
 
+
+    /**
+     * (; identifiersListA():type())*
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void parameterListB() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -267,6 +339,11 @@ public class SyntaxAnalyzer
         parameterListB();
     }
 
+
+    /**
+     * begin optionalCommands() end
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void compoundCommand() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -275,7 +352,7 @@ public class SyntaxAnalyzer
             syntaxError("Keyword 'Begin' was not found!" );
         }
 
-        opCommand();
+        optionalCommands();
 
         currentToken = getNextToken();
         if (!currentToken.getText().toLowerCase().equals("end"))
@@ -284,7 +361,12 @@ public class SyntaxAnalyzer
         }
     }
 
-    private void opCommand() throws SyntaxException
+
+    /**
+     * commandListA()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
+    private void optionalCommands() throws SyntaxException
     {
         currentToken = getNextToken();
         count--;
@@ -294,12 +376,21 @@ public class SyntaxAnalyzer
         }
     }
 
+
+    /**
+     * command() commandListB()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void commandListA() throws SyntaxException
     {
         command();
         commandListB();
     }
 
+    /**
+     * (; command())*
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void commandListB() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -314,6 +405,15 @@ public class SyntaxAnalyzer
         }
     }
 
+
+    /**
+     * id := expression()
+     * procedureActivationA()
+     * if expression() then command() elsePart()
+     * while expression() do command()
+     * begin compoundCommand()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void command() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -342,7 +442,7 @@ public class SyntaxAnalyzer
             }
 
             command();
-            partElse();
+            elsePart();
         }
         else if(currentToken.getText().toLowerCase().equals("while"))
         {
@@ -369,7 +469,12 @@ public class SyntaxAnalyzer
         }
     }
 
-    private void partElse() throws SyntaxException
+
+    /**
+     * else command()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
+    private void elsePart() throws SyntaxException
     {
         currentToken = getNextToken();
         if(currentToken.getText().toLowerCase().equals("else"))
@@ -394,6 +499,11 @@ public class SyntaxAnalyzer
         count--;
     }*/
 
+
+    /**
+     * id expressionListA()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void procedureActivationA() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -414,6 +524,11 @@ public class SyntaxAnalyzer
         expressionListA();
     }*/
 
+
+    /**
+     * (expression() expressionListB)
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void expressionListA() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -434,6 +549,11 @@ public class SyntaxAnalyzer
         }
     }
 
+
+    /**
+     * (, expression())*
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void expressionListB() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -447,6 +567,11 @@ public class SyntaxAnalyzer
         expressionListB();
     }
 
+
+    /**
+     * simpleExpresssionA() (relationalOperator simpleExpressionA())?
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void expression() throws SyntaxException
     {
         simpleExpressionA();
@@ -462,6 +587,11 @@ public class SyntaxAnalyzer
         }
     }
 
+
+    /**
+     * (+|-)? termA() simpleExpressionB()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void simpleExpressionA() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -474,6 +604,11 @@ public class SyntaxAnalyzer
         simpleExpressionB();
     }
 
+
+    /**
+     * ((+|-|or) termA())*
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void simpleExpressionB() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -489,12 +624,22 @@ public class SyntaxAnalyzer
         }
     }
 
+
+    /**
+     * factor() termB()
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void termA() throws SyntaxException
     {
         factor();
         termB();
     }
 
+
+    /**
+     * ((*|/|and) factor())*
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void termB() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -509,6 +654,14 @@ public class SyntaxAnalyzer
         }
     }
 
+
+    /**
+     * id expressionListA()
+     * (expression())
+     * (not factor())*
+     * boolean|real|integer
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void factor() throws SyntaxException
     {
         currentToken = getNextToken();
@@ -536,46 +689,12 @@ public class SyntaxAnalyzer
         }
     }
 
-    /*NOT USED*/
-    /*
-    private void sign() throws SyntaxException
-    {
-        currentToken = getNextToken();
-        if (!currentToken.getText().equals("+") && !currentToken.getText().equals("-"))
-        {
-            syntaxError("Sign was not found!" );
-        }
-    }
 
-    private void opRelational() throws SyntaxException
-    {
-        currentToken = getNextToken();
-        if (!currentToken.getClassification().equals(Token.Classifications.RELATIONAL.toString()))
-        {
-            syntaxError("Relational symbol was not found!" );
-        }
-
-    }
-
-    private void opAddition() throws SyntaxException
-    {
-        currentToken = getNextToken();
-        if (!currentToken.getClassification().equals(Token.Classifications.ADDITION.toString()))
-        {
-            syntaxError("Addition symbol was not found!" );
-        }
-    }
-
-    private void opMultiplication() throws SyntaxException
-    {
-        currentToken = getNextToken();
-        if (!currentToken.getClassification().equals(Token.Classifications.MULTIPLICATION.toString()))
-        {
-            syntaxError("Multiplicative symbol was not found!" );
-        }
-    }
-    */
-
+    /**
+     * Gets the next token, increasing the token counter and checking if there are still tokens to be read.
+     * @return Token the next token to be read.
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private Token getNextToken() throws SyntaxException
     {
         count++;
@@ -585,6 +704,12 @@ public class SyntaxAnalyzer
         return tokens.get(count);
     }
 
+
+    /**
+     * Default method for showing syntax errors. Providing an option for exceptions or messages printed on console.
+     * @param errorMsg Message that explains the error.
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
     private void syntaxError(String errorMsg) throws SyntaxException
     {
         if (!this.DEBUG_MODE)
