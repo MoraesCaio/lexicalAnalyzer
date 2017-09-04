@@ -32,6 +32,11 @@ public class Token {
     final static String multiplicationOperator = "and";
     final static String accChars = "_.:;,<>=+-/*(){}\' \t\n";
     final static String specialChars = "_.:;,<>=+-/*(){}";
+    final static public List<String> types = Arrays.asList(
+            Token.Classifications.INTEGER.toString(),
+            Token.Classifications.REAL.toString(),
+            Token.Classifications.BOOLEAN.toString()
+    );
 
 
     /**
