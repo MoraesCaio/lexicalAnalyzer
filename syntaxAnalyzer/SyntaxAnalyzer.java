@@ -724,6 +724,10 @@ public class SyntaxAnalyzer
         if(count >= tokens.size()){
             syntaxError("No more tokens to be read.");
         }
+        if(this.DEBUG_MODE)
+        {
+            System.out.println("Reading token: " + tokens.get(count).getText());
+        }
         return tokens.get(count);
     }
 
@@ -736,12 +740,10 @@ public class SyntaxAnalyzer
     private void syntaxError(String errorMsg) throws SyntaxException
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("Syntax Error! Line " + currentToken.getLineNumber() + ":\n" + currentToken.getText() + "\n" + errorMsg);
-        if (!this.DEBUG_MODE)
-        {
-            throw new SyntaxException(sb.toString());
-        }
-        System.out.println(sb.toString());
+        sb.append("Syntax Error! Line " + currentToken.getLineNumber() + ":\n");
+        sb.append(currentToken.getText() + "\n");
+        sb.append(errorMsg);
+        throw new SyntaxException(sb.toString());
     }
 
 }
