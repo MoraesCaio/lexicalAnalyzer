@@ -136,7 +136,7 @@ public class SyntaxAnalyzer
     private void varDeclarationListA() throws SyntaxException
     {
         identifiersListA();
-        
+
         currentToken = getNextToken();
         if (!currentToken.getText().equals(":"))
         {
@@ -518,19 +518,6 @@ public class SyntaxAnalyzer
         }
     }
 
-    /*NOT USED*/
-    /*private void var() throws SyntaxException
-    {
-        currentToken = getNextToken();
-        if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
-        {
-            syntaxError("Expected Identifier.");
-        }
-
-        count--;
-    }*/
-
-
     /**
      * id expressionListA() | void
      * @throws SyntaxException For more information on the error, use getMessage()
@@ -553,16 +540,6 @@ public class SyntaxAnalyzer
         expressionListA();
 
     }
-
-    /*expressionListA is always between parenthesis. Therefore, as procedureActivationB only checks for them,
-     * we can replace it by moving the parenthesis check to expressionListA.
-     * Factor also has expressionListA within its analysis.
-     */
-    /*private void procedureActivationB() throws SyntaxException
-    {
-        expressionListA();
-    }*/
-
 
     /**
      * (expression() expressionListB)
