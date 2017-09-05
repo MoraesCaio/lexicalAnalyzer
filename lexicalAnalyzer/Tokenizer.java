@@ -417,7 +417,7 @@ public class Tokenizer
      * Throws LexicalException or print errorMsg regarding DEBUG_MODE value.
      *
      * @param errorMsg Message with error's details.
-     * @throws LexicalException
+     * @throws LexicalException Use getMessage().
      */
     private void lexicalError(String errorMsg) throws LexicalException
     {
