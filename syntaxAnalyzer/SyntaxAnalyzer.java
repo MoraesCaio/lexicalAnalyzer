@@ -423,6 +423,7 @@ public class SyntaxAnalyzer
         {
             currentToken = getNextToken();
             if(!currentToken.getText().toLowerCase().equals("end")) {
+                count--;
                 command();
                 commandListB();
             }else {
