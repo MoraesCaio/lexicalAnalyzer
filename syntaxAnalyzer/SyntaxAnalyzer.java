@@ -24,7 +24,7 @@ public class SyntaxAnalyzer
     /*PROPERTIES*/
     private ArrayList<Token> tokens;
     private Token currentToken;
-    private int count = 0;
+    private static int count;
     private boolean DEBUG_MODE;
 
 
@@ -49,17 +49,11 @@ public class SyntaxAnalyzer
     }
 
 
-    public void run()
+    public void run() throws SyntaxException
     {
-        try
-        {
-            program();
-        }
-        catch (SyntaxException e)
-        {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
+        System.out.println("Analyzing syntax...");
+        count = 0;
+        program();
     }
 
 
@@ -715,6 +709,7 @@ public class SyntaxAnalyzer
 
     /**
      * Gets the next token, increasing the token counter and checking if there are still tokens to be read.
+     * On DEBUG_MODE, prints on console each token being read.
      * @return Token the next token to be read.
      * @throws SyntaxException For more information on the error, use getMessage()
      */
@@ -722,6 +717,7 @@ public class SyntaxAnalyzer
     {
         count++;
         if(count >= tokens.size()){
+            count = tokens.size() - 1;
             syntaxError("No more tokens to be read.");
         }
         if(this.DEBUG_MODE)
@@ -733,7 +729,7 @@ public class SyntaxAnalyzer
 
 
     /**
-     * Default method for showing syntax errors. Providing an option for exceptions or messages printed on console.
+     * Default method for throwing syntaxError exceptions.
      * @param errorMsg Message that explains the error.
      * @throws SyntaxException For more information on the error, use getMessage()
      */
