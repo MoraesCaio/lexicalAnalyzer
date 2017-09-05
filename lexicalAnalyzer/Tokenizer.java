@@ -3,18 +3,19 @@ package lexicalAnalyzer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.*;
+
 import Utils.StringUtils;
 
 /**
- * This is a parser of List<String> to List<Token>. To make good use of it, simply instantiate it, call parse() and
+ * This is a parser of ArrayList<String> to List<Token>. To make good use of it, simply instantiate it, call parse() and
  * access the List<Token> tokens.
- *
+ * <p>
  * Created on 06/08/17 by
- *
+ * <p>
  * Caio Moraes
  * GitHub: MoraesCaio
  * Email: caiomoraes
- *
+ * <p>
  * Janyelson Oliveira
  * GitHub: janyelson
  * Email: janyelsonvictor@gmail.com
@@ -24,7 +25,7 @@ public class Tokenizer
 {
     /*PROPERTIES*/
     private List<String> lines;
-    private List<Token> tokens;
+    private ArrayList<Token> tokens;
     private Integer lineNum;
 
     private boolean DEBUG_MODE;
@@ -40,18 +41,19 @@ public class Tokenizer
 
     /**
      * CONSTRUCTOR
+     *
      * @param lines Lines read from the source code file.
      * @throws NullPointerException In case, lines is null.
      */
     public Tokenizer(List<String> lines, boolean DEBUG_MODE) throws IllegalArgumentException
     {
-        if(lines == null)
+        if (lines == null)
         {
             throw new IllegalArgumentException("\"lines\" cannot be null.");
         }
 
         this.lines = lines;
-        this.tokens = new ArrayList<>();
+        this.tokens = new ArrayList<Token>();
         this.lineNum = 0;
         this.DEBUG_MODE = DEBUG_MODE;
     }
@@ -63,15 +65,16 @@ public class Tokenizer
 
     public Tokenizer()
     {
-        this(new ArrayList<>());
+        this(new ArrayList<String>());
     }
 
 
     /**
      * Getter for tokens.
-     * @return List<Token> The list of tokens parsed.
+     *
+     * @return ArrayList<Token> The list of tokens parsed.
      */
-    public List<Token> getTokens()
+    public ArrayList<Token> getTokens()
     {
         return tokens;
     }
@@ -99,12 +102,12 @@ public class Tokenizer
             //Detecting unclosed comments or strings
             if (onComment)
             {
-                lexicalError("A comment was not closed.\nLine: " + (lastOpenCommentLine+1));
+                lexicalError("A comment was not closed.\nLine: " + (lastOpenCommentLine + 1));
             }
 
             if (onString)
             {
-                lexicalError("A string was not closed.\nLine: " + (lastOpenStringLine+1));
+                lexicalError("A string was not closed.\nLine: " + (lastOpenStringLine + 1));
             }
         }
         catch (LexicalException lexExc)
@@ -118,6 +121,7 @@ public class Tokenizer
     /**
      * Parse the line into tokens and classifies them with the classes in Enum Token.Classifications.
      * Blank spaces and comments will be ignored.
+     *
      * @param line line that will be parsed.
      */
     private void parseLine(String line) throws LexicalException
@@ -128,17 +132,20 @@ public class Tokenizer
         for (int i = 0; i < length; i++)
         {
             //Comments
-            if ((!onComment && line.charAt(i) == '{')|| onComment)
+            if ((!onComment && line.charAt(i) == '{') || onComment)
             {
                 onComment = true;
                 i += parseComment(line.substring(i, length));
-                if(onComment) continue;
+                if (onComment)
+                {
+                    continue;
+                }
             }
 
             //Comment line
             if (line.charAt(i) == '/' && su.nextCharEquals(line, i, '/'))
             {
-                System.out.println("Line comment on line: " + (lineNum+1));
+                System.out.println("Line comment on line: " + (lineNum + 1));
                 return;
             }
 
@@ -147,7 +154,10 @@ public class Tokenizer
             {
                 onString = true;
                 i += parseString(line.substring(i, length));
-                if(onString) continue;
+                if (onString)
+                {
+                    continue;
+                }
             }
 
             //Words
@@ -166,17 +176,16 @@ public class Tokenizer
 
             //Extras
             //All specialChars except for ".{}", as they were parsed before
-            if (Token.specialChars.replaceAll("[.{}_]","").indexOf(line.charAt(i)) != -1)
+            if (Token.specialChars.replaceAll("[.{}_]", "").indexOf(line.charAt(i)) != -1)
             {
-                i += parseExtras(line. substring(i));
+                i += parseExtras(line.substring(i));
                 continue;
             }
 
             //Checking not allowed chars
-            if(Token.accChars.indexOf(line.charAt(i)) == -1)
+            if (Token.accChars.indexOf(line.charAt(i)) == -1)
             {
-                String errorMsg = "Character not allowed : " + line.charAt(i) +
-                        "\nLine: " + (lastOpenCommentLine + 1);
+                String errorMsg = "Character not allowed : " + line.charAt(i) + "\nLine: " + (lastOpenCommentLine + 1);
                 if (!DEBUG_MODE)
                 {
                     throw new LexicalException(errorMsg);
@@ -190,6 +199,7 @@ public class Tokenizer
 
     /**
      * Ignores the comments.
+     *
      * @param substring Part of the line that is not parsed yet.
      * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
      */
@@ -198,20 +208,21 @@ public class Tokenizer
         lastOpenCommentLine = lineNum;
         int length = substring.length();
 
-        for(int i = 0; i < length; i++)
+        for (int i = 0; i < length; i++)
         {
-            if(substring.charAt(i) == '}')
+            if (substring.charAt(i) == '}')
             {
                 onComment = false;
                 return i;
             }
         }
 
-        return length-1;
+        return length - 1;
     }
 
     /**
      * Ignores the strings.
+     *
      * @param substring Part of the line that is not parsed yet.
      * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
      */
@@ -220,21 +231,22 @@ public class Tokenizer
         lastOpenStringLine = lineNum;
         int length = substring.length();
 
-        for(int i = 1; i < length; i++)
+        for (int i = 1; i < length; i++)
         {
-            if(substring.charAt(i) == '\'')
+            if (substring.charAt(i) == '\'')
             {
                 onString = false;
                 return i;
             }
         }
 
-        return length-1;
+        return length - 1;
     }
 
 
     /**
      * Parses identifiers and keywords. Format: [Aa..Zz] ([0..9] | '_' | [Aa..Zz))*
+     *
      * @param substring Part of the line that is not parsed yet.
      * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
      */
@@ -245,9 +257,9 @@ public class Tokenizer
         int length = substring.length();
 
         //Extraction
-        for (;i < length; i++)
+        for (; i < length; i++)
         {
-            if(!(su.isLetterOrDigit(substring.charAt(i)) || substring.charAt(i) == '_'))
+            if (!(su.isLetterOrDigit(substring.charAt(i)) || substring.charAt(i) == '_'))
             {
                 break;
             }
@@ -255,19 +267,19 @@ public class Tokenizer
         }
 
         //Classification
-        if(Token.keywords.contains(sb.toString().toLowerCase()))
+        if (Token.keywords.contains(sb.toString().toLowerCase()))
         {
             tokens.add(new Token(sb.toString(), Token.Classifications.KEYWORD, lineNum));
         }
-        else if(Token.booleanValues.contains(sb.toString().toLowerCase()))
+        else if (Token.booleanValues.contains(sb.toString().toLowerCase()))
         {
             tokens.add(new Token(sb.toString(), Token.Classifications.BOOLEAN, lineNum));
         }
-        else if(sb.toString().toLowerCase().equals(Token.additionOperator))
+        else if (sb.toString().toLowerCase().equals(Token.additionOperator))
         {
             tokens.add(new Token(sb.toString(), Token.Classifications.ADDITION, lineNum));
         }
-        else if(sb.toString().toLowerCase().equals(Token.multiplicationOperator))
+        else if (sb.toString().toLowerCase().equals(Token.multiplicationOperator))
         {
             tokens.add(new Token(sb.toString(), Token.Classifications.MULTIPLICATION, lineNum));
         }
@@ -276,12 +288,13 @@ public class Tokenizer
             tokens.add(new Token(sb.toString(), Token.Classifications.IDENTIFIER, lineNum));
         }
 
-        return (i == length)? length-1 : (i-1);
+        return (i == length) ? length - 1 : (i - 1);
     }
 
 
     /**
      * Parse numbers: complex, reals and integers.
+     *
      * @param substring Part of the line that is not parsed yet.
      * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
      */
@@ -294,12 +307,12 @@ public class Tokenizer
         Matcher mInt = pInt.matcher(substring);
 
         //REAL
-        String regReal = regInt+"\\.\\d*";
+        String regReal = regInt + "\\.\\d*";
         Pattern pReal = Pattern.compile(regReal);
         Matcher mReal = pReal.matcher(substring);
 
         //COMPLEX
-        String regComp = "("+regReal+"|"+regInt+")i(\\+|-)("+regReal+"|"+regInt+")";
+        String regComp = "(" + regReal + "|" + regInt + ")i(\\+|-)(" + regReal + "|" + regInt + ")";
         Pattern pComp = Pattern.compile(regComp);
         Matcher mComp = pComp.matcher(substring);
 
@@ -314,23 +327,23 @@ public class Tokenizer
         if (mComp.lookingAt())
         {
             tokens.add(new Token(mComp.group(), Token.Classifications.COMPLEX, lineNum));
-            return mComp.group().length()-1;
+            return mComp.group().length() - 1;
         }
         else if (mReal.lookingAt())
         {
             tokens.add(new Token(mReal.group(), Token.Classifications.REAL, lineNum));
-            return mReal.group().length()-1;
+            return mReal.group().length() - 1;
         }
         else if (mInt.lookingAt())
         {
             tokens.add(new Token(mInt.group(), Token.Classifications.INTEGER, lineNum));
-            return mInt.group().length()-1;
+            return mInt.group().length() - 1;
         }
 
         //In case some unexpected input is read.
         else
         {
-            String errorMsg = "Unexpected input: " + substring + "\nline " + (lineNum+1);
+            String errorMsg = "Unexpected input: " + substring + "\nline " + (lineNum + 1);
             if (!DEBUG_MODE)
             {
                 throw new LexicalException(errorMsg);
@@ -344,6 +357,7 @@ public class Tokenizer
 
     /**
      * Parse other symbols: .:;,<>=+-/*()
+     *
      * @param substring Part of the line that is not parsed yet.
      * @return int - index for the for loop in parse() method. It's a gimmick to not lose the track.
      */
@@ -356,17 +370,19 @@ public class Tokenizer
         //Default classification
         Token.Classifications classification = Token.Classifications.UNCLASSIFIED;
 
-        switch(substring.charAt(0))
+        switch (substring.charAt(0))
         {
             case '<':
                 classification = Token.Classifications.RELATIONAL;
-                if (su.nextCharIsIn(substring, i, ">=")){
+                if (su.nextCharIsIn(substring, i, ">="))
+                {
                     sb.append(substring.charAt(++i));
                 }
                 break;
             case '>':
                 classification = Token.Classifications.RELATIONAL;
-                if (su.nextCharEquals(substring, i, '=')){
+                if (su.nextCharEquals(substring, i, '='))
+                {
                     sb.append(substring.charAt(++i));
                 }
                 break;
@@ -375,7 +391,8 @@ public class Tokenizer
                 break;
             case ':':
                 classification = Token.Classifications.DELIMITER;
-                if (su.nextCharEquals(substring, i, '=')){
+                if (su.nextCharEquals(substring, i, '='))
+                {
                     sb.append(substring.charAt(++i));
                     classification = Token.Classifications.ASSIGNMENT;
                 }
@@ -398,6 +415,7 @@ public class Tokenizer
 
     /**
      * Throws LexicalException or print errorMsg regarding DEBUG_MODE value.
+     *
      * @param errorMsg Message with error's details.
      * @throws LexicalException
      */
