@@ -130,7 +130,7 @@ public class SyntaxAnalyzer
 
 
     /**
-     * (identifiersListA():type();)*
+     * identifiersListA():type();varDeclarationListB
      * @throws SyntaxException For more information on the error, use getMessage()
      */
     private void varDeclarationListA() throws SyntaxException
@@ -151,14 +151,39 @@ public class SyntaxAnalyzer
             syntaxError("Symbol ';' was not found!" );
         }
 
+        varDeclarationListB();
+    }
+
+    /**
+     * (identifiersListA:type;varDeclarationListB)*
+     * @throws SyntaxException For more information on the error, use getMessage()
+     */
+    private void varDeclarationListB() throws SyntaxException
+    {
         currentToken = getNextToken();
-        if (currentToken.getText().toLowerCase().equals("procedure"))
+        if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
             count--;
             return;
         }
+        count--;
+        identifiersListA();
 
-        varDeclarationListA();
+        currentToken = getNextToken();
+        if (!currentToken.getText().equals(":"))
+        {
+            syntaxError("Symbol ':' was not found!" );
+        }
+
+        type();
+
+        currentToken = getNextToken();
+        if (!currentToken.getText().equals(";"))
+        {
+            syntaxError("Symbol ';' was not found!" );
+        }
+
+        varDeclarationListB();
     }
 
 
@@ -171,7 +196,7 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
-            syntaxError("Invalid identifier!" );
+            syntaxError("Invalid identifier! : ");
         }
 
         identifiersListB();
@@ -208,7 +233,7 @@ public class SyntaxAnalyzer
     private void type() throws SyntaxException
     {
         currentToken = getNextToken();
-        if (!Token.types.contains(currentToken.getClassification())) {
+        if (!Token.types.contains(currentToken.getText().toLowerCase())) {
             syntaxError("Invalid type!");
         }
 
@@ -388,7 +413,7 @@ public class SyntaxAnalyzer
     }
 
     /**
-     * (; command())*
+     * (; command())* | ; End
      * @throws SyntaxException For more information on the error, use getMessage()
      */
     private void commandListB() throws SyntaxException
@@ -396,8 +421,13 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if(currentToken.getText().equals(";"))
         {
-            command();
-            commandListB();
+            currentToken = getNextToken();
+            if(!currentToken.getText().toLowerCase().equals("end")) {
+                command();
+                commandListB();
+            }else {
+                count--;
+            }
         }
         else
         {
@@ -501,7 +531,7 @@ public class SyntaxAnalyzer
 
 
     /**
-     * id expressionListA()
+     * id expressionListA() | void
      * @throws SyntaxException For more information on the error, use getMessage()
      */
     private void procedureActivationA() throws SyntaxException
@@ -512,7 +542,15 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier!" );
         }
 
+        currentToken = getNextToken();
+        if(!currentToken.getText().equals("(")) {
+            count--;
+            return;
+        }
+
+        count--;
         expressionListA();
+
     }
 
     /*expressionListA is always between parenthesis. Therefore, as procedureActivationB only checks for them,
@@ -583,6 +621,7 @@ public class SyntaxAnalyzer
         }
         else
         {
+            count--;
             simpleExpressionA();
         }
     }
@@ -656,6 +695,7 @@ public class SyntaxAnalyzer
 
 
     /**
+     * id
      * id expressionListA()
      * (expression())
      * (not factor())*
@@ -667,7 +707,11 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if(currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
-            expressionListA();
+            currentToken = getNextToken();
+            count--;
+            if(currentToken.getText().equals("(")) {
+                expressionListA();
+            }
         }
         else if(currentToken.getText().equals("("))
         {
@@ -675,6 +719,7 @@ public class SyntaxAnalyzer
             currentToken = getNextToken();
             if(!currentToken.getText().equals(")"))
             {
+                count--;
                 syntaxError("Symbol ')' was not found!");
             }
         }
@@ -712,11 +757,13 @@ public class SyntaxAnalyzer
      */
     private void syntaxError(String errorMsg) throws SyntaxException
     {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Syntax Error! Line " + currentToken.getLineNumber() + ":\n" + currentToken.getText() + "\n" + errorMsg);
         if (!this.DEBUG_MODE)
         {
-            throw new SyntaxException(errorMsg);
+            throw new SyntaxException(sb.toString());
         }
-        System.out.println("Syntax Error! Line " + currentToken.getLineNumber() + ":\n" + errorMsg);
+        System.out.println(sb.toString());
     }
 
 }
