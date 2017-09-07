@@ -297,6 +297,13 @@ public class SyntaxAnalyzer
         varDeclaration();
         subProgramsDeclaration();
         compoundCommand();
+
+        currentToken = getNextToken();
+        if (!currentToken.getText().equals(";"))
+        {
+            count--;
+            syntaxError("Symbol ';' was not found!");
+        }
     }
 
 
@@ -373,6 +380,15 @@ public class SyntaxAnalyzer
         parameterListB();
     }
 
+
+    /*COMMAND'S PART, INCLUDES:
+    * commandStructure -> (command|compoundCommand)
+    *
+    * compoundCommand -> optionalCommands ->?
+    *     commandListA -> command ->? (commandListB -> command)*
+    *
+    * command -> ((if else)|(while do)|(do while)|(assignment)|(procedure)|(compound command))
+    * */
 
     /**
      * begin optionalCommands() end
@@ -452,7 +468,6 @@ public class SyntaxAnalyzer
         }
     }
 
-
     /**
      * id := expression()
      * procedureActivationA()
@@ -489,7 +504,8 @@ public class SyntaxAnalyzer
                 syntaxError("Keyword 'Then' was not found!");
             }
 
-            command();
+            commandStructure();
+
             elsePart();
         }
         else if (currentToken.getText().toLowerCase().equals("while"))
@@ -503,7 +519,20 @@ public class SyntaxAnalyzer
                 syntaxError("Keyword 'do' was not found!");
             }
 
-            command();
+            commandStructure();
+        }
+        else if (currentToken.getText().toLowerCase().equals("do"))
+        {
+            commandStructure();
+
+            currentToken = getNextToken();
+            if (!currentToken.getText().toLowerCase().equals("while"))
+            {
+                count--;
+                syntaxError("Keyword 'while' was not found!");
+            }
+
+            expression();
         }
         else if (currentToken.getText().toLowerCase().equals("begin"))
         {
@@ -519,6 +548,26 @@ public class SyntaxAnalyzer
 
 
     /**
+     * command | compoundCommand
+     *
+     * @throws SyntaxException
+     */
+    private void commandStructure() throws SyntaxException
+    {
+        currentToken = getNextToken();
+        count--;
+        if (currentToken.getText().toLowerCase().equals("begin"))
+        {
+            compoundCommand();
+        }
+        else
+        {
+            command();
+        }
+    }
+
+
+    /**
      * else command()
      *
      * @throws SyntaxException For more information on the error, use getMessage()
@@ -528,7 +577,7 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if (currentToken.getText().toLowerCase().equals("else"))
         {
-            command();
+            commandStructure();
         }
         else
         {
@@ -622,7 +671,6 @@ public class SyntaxAnalyzer
         }
         else
         {
-            count--;
             simpleExpressionA();
         }
     }
