@@ -1,7 +1,6 @@
 package syntaxAnalyzer;
 
 import lexicalAnalyzer.Token;
-
 import java.util.ArrayList;
 
 /**
@@ -49,6 +48,11 @@ public class SyntaxAnalyzer
     {
         this(new ArrayList<Token>());
     }
+
+
+    /*PROGRAM FLOW'S PART, INCLUDES:
+    * program -> varDeclaration -> subProgramsDeclaration -> compoundCommand
+    * */
 
 
     public void run() throws SyntaxException
@@ -106,6 +110,15 @@ public class SyntaxAnalyzer
         //Ending without errors
 
     }
+
+
+    /*VARIABLES PART, INCLUDES:
+    * varDeclaration ->?
+    *   varDeclarationListA ->  identifiersListA ->?
+    *   varDeclarationListB ->  identifiersListA*
+    *
+    * identifiersListA -> identifiersListB* -> type
+    * */
 
 
     /**
@@ -244,6 +257,14 @@ public class SyntaxAnalyzer
     }
 
 
+    /*SUBPROGRAMS PART, INCLUDES:
+    * subProgramsDeclaration ->
+    *  (subProgram -> arguments -> varDeclaration -> subProgramsDeclaration -> compoundCommand)*
+    *
+    * arguments -> parametersListA -> identifiersListA -> identifiersListB*
+    * */
+
+
     /**
      * procedure subProgram()
      *
@@ -348,6 +369,7 @@ public class SyntaxAnalyzer
         }
 
         type();
+
         parameterListB();
     }
 
@@ -381,14 +403,15 @@ public class SyntaxAnalyzer
     }
 
 
-    /*COMMAND'S PART, INCLUDES:
+    /*COMMANDS PART, INCLUDES:
     * commandStructure -> (command|compoundCommand)
     *
     * compoundCommand -> optionalCommands ->?
-    *     commandListA -> command ->? (commandListB -> command)*
+    *     commandListA -> command -> (commandListB -> command)*
     *
     * command -> ((if else)|(while do)|(do while)|(assignment)|(procedure)|(compound command))
     * */
+
 
     /**
      * begin optionalCommands() end
@@ -440,6 +463,7 @@ public class SyntaxAnalyzer
         commandListB();
     }
 
+
     /**
      * (; command())* | ; End
      *
@@ -467,6 +491,7 @@ public class SyntaxAnalyzer
             count--;
         }
     }
+
 
     /**
      * id := expression()
@@ -585,6 +610,7 @@ public class SyntaxAnalyzer
         }
     }
 
+
     /**
      * id expressionListA() | void
      *
@@ -609,6 +635,16 @@ public class SyntaxAnalyzer
         expressionListA();
 
     }
+
+
+    /*EXPRESSIONS PART, INCLUDES:
+    * expressionListA -> (expression -> expressionListB)*
+    *
+    * expression -> simpleExpressionA*
+    *
+    * simpleExpressionA -> (termA -> simpleExpressionB)*
+    * */
+
 
     /**
      * (expression() expressionListB)
@@ -715,6 +751,13 @@ public class SyntaxAnalyzer
     }
 
 
+    /*TERMS PART, INCLUDES:
+    * termA -> (factor -> termB)*
+    *
+    * factor -> (expressionListA | expression | factor)
+    * */
+
+
     /**
      * factor() termB()
      *
@@ -788,6 +831,11 @@ public class SyntaxAnalyzer
             syntaxError("Expected factor.");
         }
     }
+
+
+    /*UTILITIES PART, INCLUDES:
+    *   getNextToken & syntaxError
+    * */
 
 
     /**
