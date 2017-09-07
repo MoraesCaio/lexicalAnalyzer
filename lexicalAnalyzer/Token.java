@@ -106,7 +106,8 @@ public class Token
         IDENTIFIER("identifier"), //[a..z] ([a..z]|[0..9]|'_')*
         INTEGER("integer"), //[0..9]+
         REAL("real"), //[0..9]*.[0..9]+
-        BOOLEAN("boolean"), COMPLEX("complex"), //[REAL|INTEGER]i[+|-]?[REAL|INTEGER]
+        BOOLEAN("boolean"), //true false
+        COMPLEX("complex"), //[REAL|INTEGER]i[+|-]?[REAL|INTEGER]
         DELIMITER("delimiter"), //,;:.()
         ASSIGNMENT("assignment"), //:=
         RELATIONAL("relational"), //<,>,=,<>,<=,>=
