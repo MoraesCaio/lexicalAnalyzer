@@ -60,6 +60,7 @@ public class SyntaxAnalyzer
         System.out.println("Analyzing syntax...");
         count = 0;
         program();
+        System.out.println("Syntax is correct.");
     }
 
 
@@ -106,9 +107,6 @@ public class SyntaxAnalyzer
         {
             syntaxError("Symbol '.' was not found!");
         }
-
-        //Ending without errors
-
     }
 
 
