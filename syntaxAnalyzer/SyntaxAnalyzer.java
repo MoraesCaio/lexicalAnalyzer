@@ -1,6 +1,9 @@
 package syntaxAnalyzer;
 
 import lexicalAnalyzer.Token;
+import semanticAnalyzer.SymbolsTable;
+import semanticAnalyzer.SymbolsTable;
+
 import java.util.ArrayList;
 
 /**
@@ -27,6 +30,8 @@ public class SyntaxAnalyzer
     private static int count;
     private boolean DEBUG_MODE;
 
+    /*SEMANTIC ANALYZER*/
+    private SymbolsTable symbolsTable;
 
     /**
      * CONSTRUCTORS
@@ -37,6 +42,7 @@ public class SyntaxAnalyzer
     {
         this.tokens = tokens;
         this.DEBUG_MODE = DEBUG_MODE;
+        this.symbolsTable = new SymbolsTable();
     }
 
     public SyntaxAnalyzer(ArrayList<Token> tokens)
@@ -82,6 +88,9 @@ public class SyntaxAnalyzer
             syntaxError("Keyword 'program' was not found!");
         }
 
+        //enter into global scope
+        symbolsTable.enterScope();
+
         //identifier: name of the program
         currentToken = getNextToken();
         if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
@@ -100,6 +109,9 @@ public class SyntaxAnalyzer
         varDeclaration();
         subProgramsDeclaration();
         compoundCommand();
+
+        //exit scope
+        symbolsTable.exitScope();
 
         //delimiter: '.'
         currentToken = getNextToken();
@@ -211,6 +223,15 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier! : ");
         }
 
+        //Checks whether the current identifier is declared elsewhere in the same scope
+        if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
+        {
+            System.out.println("Error line " + currentToken.getLineNumber() + " : duplicate declaration of " + currentToken.getText());
+        }
+
+        //If not, put the identifier into stack
+        symbolsTable.addSymbol(currentToken.getText());
+
         identifiersListB();
     }
 
@@ -234,6 +255,15 @@ public class SyntaxAnalyzer
         {
             syntaxError("Invalid identifier!");
         }
+
+        //Checks whether the current identifier is declared elsewhere in the same scope
+        if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
+        {
+            System.out.println("Error line " + currentToken.getLineNumber() + " : duplicate declaration of " + currentToken.getText());
+        }
+
+        //If not, put the identifier into stack
+        symbolsTable.addSymbol(currentToken.getText());
 
         identifiersListB();
     }
@@ -304,6 +334,18 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier!");
         }
 
+        //Checks whether the current identifier is declared elsewhere in the same scope
+        if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
+        {
+            System.out.println("Error line " + currentToken.getLineNumber() + " : duplicate declaration of " + currentToken.getText());
+        }
+
+        //If not, put the identifier into stack
+        symbolsTable.addSymbol(currentToken.getText());
+
+        //enter into local scope
+        symbolsTable.enterScope();
+
         arguments();
 
         currentToken = getNextToken();
@@ -316,6 +358,9 @@ public class SyntaxAnalyzer
         varDeclaration();
         subProgramsDeclaration();
         compoundCommand();
+
+        //exit scope
+        symbolsTable.exitScope();
 
         currentToken = getNextToken();
         if (!currentToken.getText().equals(";"))
@@ -505,6 +550,12 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if (currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
+            //Checks whether the current identifier is declared elsewhere
+            if(!symbolsTable.searchIdentifier(currentToken.getText()))
+            {
+                System.out.println("Error line " + currentToken.getLineNumber() + " : declaration of " + currentToken.getText() + " not find");
+            }
+
             currentToken = getNextToken();
             if (currentToken.getText().equals(":="))
             {
@@ -802,6 +853,12 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if (currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
+            //Checks whether the current identifier is declared elsewhere
+            if(!symbolsTable.searchIdentifier(currentToken.getText()))
+            {
+                System.out.println("Error line " + currentToken.getLineNumber() + " : declaration of " + currentToken.getText() + " not find!");
+            }
+
             currentToken = getNextToken();
             count--;
             if (currentToken.getText().equals("("))
