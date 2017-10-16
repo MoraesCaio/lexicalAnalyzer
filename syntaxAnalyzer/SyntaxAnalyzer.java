@@ -1,7 +1,7 @@
 package syntaxAnalyzer;
 
 import lexicalAnalyzer.Token;
-import semanticAnalyzer.SymbolsTable;
+import semanticAnalyzer.*;
 import semanticAnalyzer.SymbolsTable;
 
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ public class SyntaxAnalyzer
 
     /*SEMANTIC ANALYZER*/
     private SymbolsTable symbolsTable;
+    private TypeControl typeControl;
 
     /**
      * CONSTRUCTORS
@@ -43,6 +44,7 @@ public class SyntaxAnalyzer
         this.tokens = tokens;
         this.DEBUG_MODE = DEBUG_MODE;
         this.symbolsTable = new SymbolsTable();
+        this.typeControl = new TypeControl();
     }
 
     public SyntaxAnalyzer(ArrayList<Token> tokens)
@@ -61,8 +63,7 @@ public class SyntaxAnalyzer
     * */
 
 
-    public void run() throws SyntaxException
-    {
+    public void run() throws SyntaxException, SemanticException {
         System.out.println("Analyzing syntax...");
         count = 0;
         program();
@@ -79,7 +80,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void program() throws SyntaxException
+    private void program() throws SyntaxException, SemanticException
     {
         //keyword: 'program'
         currentToken = tokens.get(count); //count == 0
@@ -97,6 +98,8 @@ public class SyntaxAnalyzer
         {
             syntaxError("Invalid identifier for program!");
         }
+
+        symbolsTable.addSymbol(new Symbol(currentToken.getText(), "program"));
 
         //identifier: ';'
         currentToken = getNextToken();
@@ -136,8 +139,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void varDeclaration() throws SyntaxException
-    {
+    private void varDeclaration() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (currentToken.getText().toLowerCase().equals("var"))
         {
@@ -155,8 +157,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void varDeclarationListA() throws SyntaxException
-    {
+    private void varDeclarationListA() throws SyntaxException, SemanticException {
         identifiersListA();
 
         currentToken = getNextToken();
@@ -181,8 +182,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void varDeclarationListB() throws SyntaxException
-    {
+    private void varDeclarationListB() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
@@ -215,22 +215,23 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void identifiersListA() throws SyntaxException
-    {
+    private void identifiersListA() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
-            syntaxError("Invalid identifier! : ");
+            syntaxError("Invalid identifier!");
         }
 
+        if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
         //Checks whether the current identifier is declared elsewhere in the same scope
         if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
         {
-            System.out.println("Error line " + currentToken.getLineNumber() + " : duplicate declaration of " + currentToken.getText());
+            semanticError("Duplicate identifier!");
         }
 
+
         //If not, put the identifier into stack
-        symbolsTable.addSymbol(currentToken.getText());
+        symbolsTable.addSymbol(new Symbol(currentToken.getText()));
 
         identifiersListB();
     }
@@ -241,8 +242,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void identifiersListB() throws SyntaxException
-    {
+    private void identifiersListB() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getText().equals(","))
         {
@@ -256,14 +256,16 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier!");
         }
 
+        if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
         //Checks whether the current identifier is declared elsewhere in the same scope
         if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
         {
-            System.out.println("Error line " + currentToken.getLineNumber() + " : duplicate declaration of " + currentToken.getText());
+            semanticError("Duplicate identifier!");
         }
 
+
         //If not, put the identifier into stack
-        symbolsTable.addSymbol(currentToken.getText());
+        symbolsTable.addSymbol(new Symbol(currentToken.getText()));
 
         identifiersListB();
     }
@@ -282,6 +284,8 @@ public class SyntaxAnalyzer
             syntaxError("Invalid type!");
         }
 
+        symbolsTable.assignType(currentToken.getText());
+
     }
 
 
@@ -298,8 +302,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void subProgramsDeclaration() throws SyntaxException
-    {
+    private void subProgramsDeclaration() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         count--;
         if (currentToken.getText().toLowerCase().equals("procedure"))
@@ -318,8 +321,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void subProgram() throws SyntaxException
-    {
+    private void subProgram() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getText().toLowerCase().equals("procedure"))
         {
@@ -334,14 +336,16 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier!");
         }
 
+        if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
         //Checks whether the current identifier is declared elsewhere in the same scope
         if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
         {
-            System.out.println("Error line " + currentToken.getLineNumber() + " : duplicate declaration of " + currentToken.getText());
+            semanticError("Duplicate identifier!");
         }
 
+
         //If not, put the identifier into stack
-        symbolsTable.addSymbol(currentToken.getText());
+        symbolsTable.addSymbol(new ProcedureSymbol(currentToken.getText()));
 
         //enter into local scope
         symbolsTable.enterScope();
@@ -376,8 +380,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void arguments() throws SyntaxException
-    {
+    private void arguments() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getText().equals("("))
         {
@@ -401,10 +404,8 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void parameterListA() throws SyntaxException
-    {
+    private void parameterListA() throws SyntaxException, SemanticException {
         identifiersListA();
-
         currentToken = getNextToken();
         if (!currentToken.getText().equals(":"))
         {
@@ -422,12 +423,12 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void parameterListB() throws SyntaxException
-    {
+    private void parameterListB() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getText().equals(";"))
         {
             count--;
+            symbolsTable.assignParameters();
             return;
         }
 
@@ -461,8 +462,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void compoundCommand() throws SyntaxException
-    {
+    private void compoundCommand() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getText().toLowerCase().equals("begin"))
         {
@@ -484,8 +484,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void optionalCommands() throws SyntaxException
-    {
+    private void optionalCommands() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         count--;
         if (!currentToken.getText().toLowerCase().equals("end"))
@@ -500,8 +499,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void commandListA() throws SyntaxException
-    {
+    private void commandListA() throws SyntaxException, SemanticException {
         command();
         commandListB();
     }
@@ -512,8 +510,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void commandListB() throws SyntaxException
-    {
+    private void commandListB() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (currentToken.getText().equals(";"))
         {
@@ -545,31 +542,52 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void command() throws SyntaxException
-    {
+    private void command() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
+            if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase().toLowerCase())) semanticError("Program name cannot be used");
             //Checks whether the current identifier is declared elsewhere
             if(!symbolsTable.searchIdentifier(currentToken.getText()))
             {
-                System.out.println("Error line " + currentToken.getLineNumber() + " : declaration of " + currentToken.getText() + " not find");
+                semanticError("Using not declared identifier!");
             }
+
+
+            String resultClassification = symbolsTable.getType(currentToken.getText());
 
             currentToken = getNextToken();
             if (currentToken.getText().equals(":="))
             {
+                typeControl.pushMark();
                 expression();
+                try{
+                    typeControl.popMark();
+                    typeControl.verifyResult(resultClassification);
+                }catch (SemanticException e) {
+                    semanticError(e.getMessage());
+                }
+
             }
             else
             {
                 count -= 2;
                 procedureActivationA();
+                typeControl.reset();
             }
         }
         else if (currentToken.getText().toLowerCase().equals("if"))
         {
+            String resultClassification = "boolean";
+            typeControl.pushMark();
             expression();
+
+            try{
+                typeControl.popMark();
+                typeControl.verifyResult(resultClassification);
+            }catch (SemanticException e) {
+                semanticError(e.getMessage());
+            }
 
             currentToken = getNextToken();
             if (!currentToken.getText().toLowerCase().equals("then"))
@@ -584,7 +602,15 @@ public class SyntaxAnalyzer
         }
         else if (currentToken.getText().toLowerCase().equals("while"))
         {
+            String resultClassification = "boolean";
+            typeControl.pushMark();
             expression();
+            try{
+                typeControl.popMark();
+                typeControl.verifyResult(resultClassification);
+            } catch (SemanticException e) {
+                semanticError(e.getMessage());
+            }
 
             currentToken = getNextToken();
             if (!currentToken.getText().toLowerCase().equals("do"))
@@ -606,7 +632,16 @@ public class SyntaxAnalyzer
                 syntaxError("Keyword 'while' was not found!");
             }
 
+            String resultClassification = "boolean";
+            typeControl.pushMark();
             expression();
+            try{
+                typeControl.popMark();
+                typeControl.verifyResult(resultClassification);
+            } catch (SemanticException e) {
+                semanticError(e.getMessage());
+            }
+
         }
         else if (currentToken.getText().toLowerCase().equals("begin"))
         {
@@ -626,8 +661,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException
      */
-    private void commandStructure() throws SyntaxException
-    {
+    private void commandStructure() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         count--;
         if (currentToken.getText().toLowerCase().equals("begin"))
@@ -646,8 +680,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void elsePart() throws SyntaxException
-    {
+    private void elsePart() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (currentToken.getText().toLowerCase().equals("else"))
         {
@@ -665,14 +698,14 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void procedureActivationA() throws SyntaxException
-    {
+    private void procedureActivationA() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
             syntaxError("Invalid identifier!");
         }
 
+        typeControl.setCallProcedure(true, symbolsTable.getProcedure(currentToken.getText()));
         currentToken = getNextToken();
         if (!currentToken.getText().equals("("))
         {
@@ -700,8 +733,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void expressionListA() throws SyntaxException
-    {
+    private void expressionListA() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getText().equals("("))
         {
@@ -709,7 +741,20 @@ public class SyntaxAnalyzer
         }
         else
         {
+
+            typeControl.pushMark();
             expression();
+            try {
+                typeControl.popMark();
+
+                if(typeControl.isCallProcedure()) {
+                    typeControl.pushParameter(typeControl.getFirstType());
+                    typeControl.reset();
+                }
+            }  catch (SemanticException e) {
+                semanticError(e.getMessage());
+            }
+
             expressionListB();
 
             currentToken = getNextToken();
@@ -726,16 +771,35 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void expressionListB() throws SyntaxException
-    {
+    private void expressionListB() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getText().equals(","))
         {
             count--;
+            try {
+                typeControl.verifyResultProcedureCall();
+            } catch (SemanticException e) {
+                semanticError(e.getMessage());
+            }
+
             return;
         }
 
+        typeControl.pushMark();
         expression();
+
+        try {
+            typeControl.popMark();
+
+            if(typeControl.isCallProcedure()) {
+                typeControl.pushParameter(typeControl.getFirstType());
+                typeControl.reset();
+            }
+        } catch (SemanticException e) {
+            semanticError(e.getMessage());
+
+        }
+
         expressionListB();
     }
 
@@ -745,8 +809,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void expression() throws SyntaxException
-    {
+    private void expression() throws SyntaxException, SemanticException {
         simpleExpressionA();
 
         currentToken = getNextToken();
@@ -756,6 +819,7 @@ public class SyntaxAnalyzer
         }
         else
         {
+            typeControl.pushOperation("relational");
             simpleExpressionA();
         }
     }
@@ -766,8 +830,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void simpleExpressionA() throws SyntaxException
-    {
+    private void simpleExpressionA() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (!currentToken.getText().equals("+") && !currentToken.getText().equals("-"))
         {
@@ -784,8 +847,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void simpleExpressionB() throws SyntaxException
-    {
+    private void simpleExpressionB() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         //stop simpleExpressionB's loop
         if (!currentToken.getClassification().equals(Token.Classifications.ADDITION.toString()))
@@ -794,6 +856,7 @@ public class SyntaxAnalyzer
         }
         else
         {
+            typeControl.pushOperation("addition");
             termA();
             simpleExpressionB();
         }
@@ -812,8 +875,7 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void termA() throws SyntaxException
-    {
+    private void termA() throws SyntaxException, SemanticException {
         factor();
         termB();
     }
@@ -824,11 +886,11 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void termB() throws SyntaxException
-    {
+    private void termB() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (currentToken.getClassification().equals(Token.Classifications.MULTIPLICATION.toString()))
         {
+            typeControl.pushOperation("multiplication");
             factor();
             termB();
         }
@@ -848,16 +910,25 @@ public class SyntaxAnalyzer
      *
      * @throws SyntaxException For more information on the error, use getMessage()
      */
-    private void factor() throws SyntaxException
-    {
+    private void factor() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
         if (currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
+            if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Program name cannot be used");
             //Checks whether the current identifier is declared elsewhere
             if(!symbolsTable.searchIdentifier(currentToken.getText()))
             {
-                System.out.println("Error line " + currentToken.getLineNumber() + " : declaration of " + currentToken.getText() + " not find!");
+                semanticError("Using not declared identifier!");
             }
+
+
+            try {
+                typeControl.pushType(symbolsTable.getType(currentToken.getText()));
+            } catch (SemanticException e) {
+                semanticError(e.getMessage());
+
+            }
+
 
             currentToken = getNextToken();
             count--;
@@ -868,7 +939,14 @@ public class SyntaxAnalyzer
         }
         else if (currentToken.getText().equals("("))
         {
+            typeControl.pushMark();
             expression();
+            try {
+                typeControl.popMark();
+            } catch (SemanticException e) {
+                semanticError(e.getMessage());
+            }
+
             currentToken = getNextToken();
             if (!currentToken.getText().equals(")"))
             {
@@ -880,11 +958,20 @@ public class SyntaxAnalyzer
         {
             factor();
         }
-        else if (!Token.types.contains(currentToken.getClassification()))
+        else if (Token.types.contains(currentToken.getClassification()))
         {
+            try{
+                typeControl.pushType(currentToken.getClassification());
+            } catch (SemanticException e) {
+                semanticError(e.getMessage());
+            }
+        }
+        else {
             count--;
             syntaxError("Expected factor.");
         }
+
+
     }
 
 
@@ -928,6 +1015,20 @@ public class SyntaxAnalyzer
                 currentToken.getText() + "\n" +
                 errorMsg;
         throw new SyntaxException(str);
+    }
+
+    /**
+     * Default method for throwing syntaxError exceptions.
+     *
+     * @param errorMsg Message that explains the error.
+     * @throws SemanticException For more information on the error, use getMessage()
+     */
+    private void semanticError(String errorMsg) throws SemanticException
+    {
+        String str = "Semantic Error! Line " + currentToken.getLineNumber() + ":\n" +
+                currentToken.getText() + "\n" +
+                errorMsg;
+        throw new SemanticException(str);
     }
 
 }
