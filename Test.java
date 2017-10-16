@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import lexicalAnalyzer.*;
+import semanticAnalyzer.SemanticException;
 import syntaxAnalyzer.*;
 
 /**
@@ -41,10 +42,10 @@ public class Test
             System.out.println("Error: " + iaExc.getMessage());
             iaExc.printStackTrace();
         }
-        catch (SyntaxException synEx)
+        catch (SyntaxException | SemanticException sEx)
         {
-            System.out.println(synEx.getMessage());
-            synEx.printStackTrace();
+            System.out.println(sEx.getMessage());
+            sEx.printStackTrace();
         }
 
         System.out.println("Program has finished. Press <ENTER> to close.");
