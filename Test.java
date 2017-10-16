@@ -6,7 +6,7 @@ import semanticAnalyzer.SemanticException;
 import syntaxAnalyzer.*;
 
 /**
- * This is a lexical analyzer for Pascal. It was created as experience for a better compiler's comprehension.
+ * This is a program analyzer for Pascal. It was created as experience for a better compiler's comprehension.
  * <p>
  * Created on 06/08/17 by
  * <p>
