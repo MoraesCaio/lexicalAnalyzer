@@ -3,6 +3,20 @@ package semanticAnalyzer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is a class for represent symbols table, which will store the symbols, with their type, and check for
+ * duplicate declarations or use of undeclared identifiers,  using a stack and a marker to separate scopes.
+ * <p>
+ * Created on 14/10/17 by
+ * <p>
+ * Caio Moraes
+ * GitHub: MoraesCaio
+ * Email: caiomoraes
+ * <p>
+ * Janyelson Oliveira
+ * GitHub: janyelson
+ * Email: janyelsonvictor@gmail.com
+ */
 public class SymbolsTable 
 {
 
@@ -15,6 +29,12 @@ public class SymbolsTable
         stack = new ArrayList<Symbol>();
     }
 
+    /**
+     * Given the identifier name, returns its type.
+     *
+     * @param identifierName identifier name
+     * @return type of identifier
+     */
     public String getType(String identifierName) {
     	int i = stack.size() - 1;
         while(i >= 0) {
@@ -48,6 +68,7 @@ public class SymbolsTable
 
     /**
      * Search for another indentifier declaration with same name and same scope
+     *
      * @param identifierName name of the identifier that will be searched on the stack
      * @return true if there is an identifier with the same name, otherwise false
      */
@@ -65,6 +86,7 @@ public class SymbolsTable
 
     /**
      * Search for another indentifier declaration with same name in all stack
+     *
      * @param identifierName name of the identifier that will be searched on the stack
      * @return true if there is an identifier with the same name, otherwise false
      */
@@ -80,12 +102,18 @@ public class SymbolsTable
 
     /**
      * Put a identifier on top of the stack
+     *
      * @param symbol identifier that will be placed int the stack
      */
     public void addSymbol(Symbol symbol) {
         stack.add(symbol);
     }
 
+    /**
+     * Assign a type to all identifiers with no types ("void").
+     *
+     * @param type type will be assign
+     */
     public void assignType(String type) {
     	int i = stack.size() - 1;
 
@@ -95,6 +123,10 @@ public class SymbolsTable
     	}
     }
 
+    /**
+     * Assign parameters to the last declared procedure.
+     *
+     */
     public void assignParameters()
     {
         ProcedureSymbol procedureSymbol = getLastProcedure();
@@ -107,6 +139,12 @@ public class SymbolsTable
 
     }
 
+
+    /**
+     * Get the last declared procedure
+     *
+     * @return a procedure object
+     */
     private ProcedureSymbol getLastProcedure() {
 
         int i = stack.size() - 1;
@@ -117,6 +155,12 @@ public class SymbolsTable
         return (ProcedureSymbol) stack.get(i);
     }
 
+    /**
+     * Given the procedure name, returns its object.
+     *
+     * @param procedureName procedure name
+     * @return procedure object
+     */
     public ProcedureSymbol getProcedure(String procedureName) {
         int i = stack.size() - 1;
         while(!stack.get(i).getName().equals(procedureName) && stack.get(i).getType().equals("procedure") ) {
@@ -126,6 +170,11 @@ public class SymbolsTable
         return (ProcedureSymbol) stack.get(i);
     }
 
+    /**
+     * Get the program name in the stack.
+     *
+     * @return name of program
+     */
     public String getProgramName() {
         return stack.get(1).getName();
     }
