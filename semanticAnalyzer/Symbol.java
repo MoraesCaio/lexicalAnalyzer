@@ -29,7 +29,7 @@ public class Symbol
 
     public Symbol(String name)
     {
-        this(name, "No type specified");
+        this(name, "void");
     }
 
     public Symbol()
