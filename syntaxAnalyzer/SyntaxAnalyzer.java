@@ -223,8 +223,8 @@ public class SyntaxAnalyzer
         }
 
         if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
-        //Checks whether the current identifier is declared elsewhere in the same scope
-        if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
+        //Checks whether the current identifier is declared here or elsewhere in the same scope
+        if(symbolsTable.hasDuplicateDeclaration(currentToken.getText()))
         {
             semanticError("Duplicate identifier!");
         }
@@ -258,7 +258,7 @@ public class SyntaxAnalyzer
 
         if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
         //Checks whether the current identifier is declared elsewhere in the same scope
-        if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
+        if(symbolsTable.hasDuplicateDeclaration(currentToken.getText()))
         {
             semanticError("Duplicate identifier!");
         }
@@ -338,7 +338,7 @@ public class SyntaxAnalyzer
 
         if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
         //Checks whether the current identifier is declared elsewhere in the same scope
-        if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
+        if(symbolsTable.hasDuplicateDeclaration(currentToken.getText()))
         {
             semanticError("Duplicate identifier!");
         }
@@ -548,7 +548,7 @@ public class SyntaxAnalyzer
         {
             if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase().toLowerCase())) semanticError("Program name cannot be used");
             //Checks whether the current identifier is declared elsewhere
-            if(!symbolsTable.searchIdentifier(currentToken.getText()))
+            if(!symbolsTable.hasIdentifier(currentToken.getText()))
             {
                 semanticError("Using not declared identifier!");
             }
@@ -916,7 +916,7 @@ public class SyntaxAnalyzer
         {
             if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Program name cannot be used");
             //Checks whether the current identifier is declared elsewhere
-            if(!symbolsTable.searchIdentifier(currentToken.getText()))
+            if(!symbolsTable.hasIdentifier(currentToken.getText()))
             {
                 semanticError("Using not declared identifier!");
             }

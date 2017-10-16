@@ -17,67 +17,79 @@ import java.util.List;
  * GitHub: janyelson
  * Email: janyelsonvictor@gmail.com
  */
-public class SymbolsTable 
+public class SymbolsTable
 {
-
+    /*PROPERTIES*/
     private final static String MARK = "$";
     private final static String MARK_TYPE = "markType";
     private List<Symbol> stack;
 
-    public SymbolsTable() 
+
+    /*CONSTRUCTORS*/
+    public SymbolsTable()
     {
         stack = new ArrayList<Symbol>();
     }
 
+
+    /*METHODS*/
     /**
      * Given the identifier name, returns its type.
      *
      * @param identifierName identifier name
      * @return type of identifier
      */
-    public String getType(String identifierName) {
-    	int i = stack.size() - 1;
-        while(i >= 0) {
-            if(stack.get(i).getName().equals(identifierName)) return stack.get(i).getType();
-            i--;
+    public String getType(String identifierName)
+    {
+        for (int i = stack.size() - 1; i >= 0; i--)
+        {
+            if (stack.get(i).getName().equals(identifierName))
+            {
+                return stack.get(i).getType();
+            }
         }
-
         return "void";
     }
+
 
     /**
      * Adds a tag to the stack, indicating a new scope
      */
-    public void enterScope() 
+    public void enterScope()
     {
         stack.add(new Symbol(MARK, MARK_TYPE));
     }
 
+
     /**
      * Remove all identifiers of the stack until reach a tag
      */
-    public void exitScope() {
-        int i = stack.size() - 1;
-        while(!stack.get(i).getName().equals(MARK)) {
+    public void exitScope()
+    {
+        int i;
+        for (i = stack.size() - 1; !stack.get(i).getName().equals(MARK); i--)
+        {
             stack.remove(i);
-            i--;
         }
 
         stack.remove(i);
     }
 
+
     /**
-     * Search for another indentifier declaration with same name and same scope
+     * Search for another identifier declaration with same name and same scope
      *
      * @param identifierName name of the identifier that will be searched on the stack
      * @return true if there is an identifier with the same name, otherwise false
      */
-    public boolean searchDuplicateDeclaration(String identifierName) {
-
-        int i = stack.size() - 1;
-        while(!stack.get(i).getName().equals(MARK)) {
-            if(stack.get(i).getName().equals(identifierName)) return true;
-            i--;
+    public boolean hasDuplicateDeclaration(String identifierName)
+    {
+        for (int i = stack.size() - 1; !stack.get(i).getName().equals(MARK); i--)
+        {
+            if (stack.get(i).getName().equals(identifierName))
+            {
+                return true;
+            }
         }
 
         return false;
@@ -85,16 +97,19 @@ public class SymbolsTable
 
 
     /**
-     * Search for another indentifier declaration with same name in all stack
+     * Search for another identifier declaration with same name in all stack
      *
      * @param identifierName name of the identifier that will be searched on the stack
      * @return true if there is an identifier with the same name, otherwise false
      */
-    public boolean searchIdentifier(String identifierName) {
-        int i = stack.size() - 1;
-        while(i >= 0) {
-            if(stack.get(i).getName().equals(identifierName)) return true;
-            i--;
+    public boolean hasIdentifier(String identifierName)
+    {
+        for (int i = stack.size() - 1; i >= 0; i--)
+        {
+            if (stack.get(i).getName().equals(identifierName))
+            {
+                return true;
+            }
         }
 
         return false;
@@ -105,38 +120,39 @@ public class SymbolsTable
      *
      * @param symbol identifier that will be placed int the stack
      */
-    public void addSymbol(Symbol symbol) {
+    public void addSymbol(Symbol symbol)
+    {
         stack.add(symbol);
     }
+
 
     /**
      * Assign a type to all identifiers with no types ("void").
      *
      * @param type type will be assign
      */
-    public void assignType(String type) {
-    	int i = stack.size() - 1;
-
-    	while(stack.get(i).getType().equals("void")) {
-    		stack.get(i).setType(type);
-    		i--;
-    	}
+    public void assignType(String type)
+    {
+        for (int i = stack.size() - 1; stack.get(i).getType().equals("void"); i--)
+        {
+            stack.get(i).setType(type);
+        }
     }
+
 
     /**
      * Assign parameters to the last declared procedure.
-     *
      */
     public void assignParameters()
     {
         ProcedureSymbol procedureSymbol = getLastProcedure();
-        int i = stack.size() - 1;
-
-        while(!stack.get(i).getType().equals("procedure")) {
-            if(!stack.get(i).getType().equals(MARK_TYPE)) procedureSymbol.addParameter(stack.get(i));
-            i--;
+        for (int i = stack.size() - 1; !stack.get(i).getType().equals("procedure"); i--)
+        {
+            if (!stack.get(i).getType().equals(MARK_TYPE))
+            {
+                procedureSymbol.addParameter(stack.get(i));
+            }
         }
-
     }
 
 
@@ -145,15 +161,14 @@ public class SymbolsTable
      *
      * @return a procedure object
      */
-    private ProcedureSymbol getLastProcedure() {
-
-        int i = stack.size() - 1;
-
-        while(!stack.get(i).getType().equals("procedure")) {
-            i--;
-        }
+    private ProcedureSymbol getLastProcedure()
+    {
+        int i;
+        //searching for procedure's index
+        for (i = stack.size() - 1; !stack.get(i).getType().equals("procedure"); i--);
         return (ProcedureSymbol) stack.get(i);
     }
+
 
     /**
      * Given the procedure name, returns its object.
@@ -161,21 +176,25 @@ public class SymbolsTable
      * @param procedureName procedure name
      * @return procedure object
      */
-    public ProcedureSymbol getProcedure(String procedureName) {
-        int i = stack.size() - 1;
-        while(!stack.get(i).getName().equals(procedureName) && stack.get(i).getType().equals("procedure") ) {
-            i--;
-        }
+    public ProcedureSymbol getProcedure(String procedureName)
+    {
+        int i;
+        //searching for procedure's index
+        for (i = stack.size() - 1;
+                !stack.get(i).getName().equals(procedureName) && stack.get(i).getType().equals("procedure");
+                i--);
 
         return (ProcedureSymbol) stack.get(i);
     }
+
 
     /**
      * Get the program name in the stack.
      *
      * @return name of program
      */
-    public String getProgramName() {
+    public String getProgramName()
+    {
         return stack.get(1).getName();
     }
 

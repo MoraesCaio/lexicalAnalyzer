@@ -28,7 +28,7 @@ public class Test
 
         try
         {
-            tokenizer = new Tokenizer(Files.readAllLines(Paths.get("Test.pascal")), true);
+            tokenizer = new Tokenizer(Files.readAllLines(Paths.get("Test.pascal")), false);
             tokenizer.parse();
             for (Token t : tokenizer.getTokens())
             {
