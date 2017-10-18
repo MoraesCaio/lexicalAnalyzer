@@ -17,7 +17,7 @@ import java.util.List;
  * GitHub: janyelson
  * Email: janyelsonvictor@gmail.com
  */
-public class SymbolsTable
+public class SymbolTable
 {
     /*PROPERTIES*/
     private final static String MARK = "$";
@@ -26,7 +26,7 @@ public class SymbolsTable
 
 
     /*CONSTRUCTORS*/
-    public SymbolsTable()
+    public SymbolTable()
     {
         stack = new ArrayList<Symbol>();
     }

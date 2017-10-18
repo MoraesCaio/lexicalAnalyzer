@@ -42,6 +42,8 @@ public class TypeControl
         procedureParametersStack = new ArrayList<String>();
     }
 
+
+    /*METHODS*/
     /**
      * Push a MARK into the stack of expression. Represent a '(' in expression
      */
@@ -50,10 +52,11 @@ public class TypeControl
         stackExpression.add(MARK);
     }
 
+
     /**
      * Pop a MARK into the stack of expression. Represent a ')' in expression
-     * Remove and store a type result of operation and remove  a MARK ('(')
-     * , and put the result type store in the stack.
+     * Remove and store a type result of operation and remove a MARK ('(')
+     *  and put the result type store in the stack.
      * eg:
      * stackExpression: [integer, MARK, integer] -> [integer, integer]
      */
@@ -68,8 +71,9 @@ public class TypeControl
         pushType(result);
     }
 
+
     /**
-     * Push a type into the stack of expression. If there two sequence type in the stack, do the operation
+     * Push a type into the stack of expression. If there is two sequence type in the stack, do the operation
      *
      * @param type type will be pushed
      */
@@ -125,12 +129,16 @@ public class TypeControl
     /**
      * Make operation with two types in sequence and call refreshStack
      *
-     * @param x1,x2 x1 for firt type and x2 second type in the stack of expression
+     * @param firstTypeIdx index of the first operand's type in the stack of expression
+     * @param secondTypeIdx index of the second operand's type in the stack of expression
      * @throws SemanticException for errors in type combination
      */
-    public void makeOperation(int x1, int x2) throws SemanticException
+    public void makeOperation(int firstTypeIdx, int secondTypeIdx) throws SemanticException
     {
-        if (stackExpression.get(x1).toLowerCase().equals("integer") && stackExpression.get(x2).toLowerCase().equals("integer"))
+        String firstType = stackExpression.get(firstTypeIdx).toLowerCase();
+        String secondType = stackExpression.get(secondTypeIdx).toLowerCase();
+
+        if (firstType.equals("integer") && secondType.equals("integer"))
         {
             if (!getLastOperation().equals("relational"))
             {
@@ -143,7 +151,10 @@ public class TypeControl
 
             popOperation();
         }
-        else if (stackExpression.get(x1).toLowerCase().equals("integer") && stackExpression.get(x2).toLowerCase().equals("real"))
+        else if ((firstType.equals("integer") && secondType.equals("real")) ||
+                 (firstType.equals("real") && secondType.equals("integer")) ||
+                 (firstType.equals("real") && secondType.equals("real"))
+                 )
         {
             if (!getLastOperation().equals("relational"))
             {
@@ -155,41 +166,17 @@ public class TypeControl
             }
             popOperation();
         }
-        else if (stackExpression.get(x1).toLowerCase().equals("real") && stackExpression.get(x2).toLowerCase().equals("integer"))
-        {
-            if (!getLastOperation().equals("relational"))
-            {
-                refreshStack("real");
-            }
-            else
-            {
-                refreshStack("boolean");
-            }
-            popOperation();
-        }
-        else if (stackExpression.get(x1).toLowerCase().equals("real") && stackExpression.get(2).toLowerCase().equals("real"))
-        {
-            if (!getLastOperation().equals("relational"))
-            {
-                refreshStack("real");
-            }
-            else
-            {
-                refreshStack("boolean");
-            }
-            popOperation();
-        }
-        else if (stackExpression.get(x1).toLowerCase().equals("boolean") && stackExpression.get(x2).toLowerCase().equals("boolean"))
+        else if (firstType.equals("boolean") && secondType.equals("boolean"))
         {
             if (getLastOperation().equals("relational"))
             {
                 refreshStack("boolean");
+                popOperation();
             }
             else
             {
                 throw new SemanticException("Error in operation");
             }
-            popOperation();
         }
         else
         {
@@ -201,29 +188,23 @@ public class TypeControl
     /**
      * Verify result, comparing the last element int the stack with the expected result of the entire expression.
      *
-     * @param typeVar, expected result.
+     * @param typeVar expected result.
      */
     public void verifyResult(String typeVar) throws SemanticException
     {
-        if (stackExpression.get(0).toLowerCase().equals("integer") && typeVar.toLowerCase().equals("integer"))
-        {
-            stackExpression.clear();
-        }
-        else if (stackExpression.get(0).toLowerCase().equals("integer") && typeVar.toLowerCase().equals("real"))
-        {
-            stackExpression.clear();
-        }
-        else if (stackExpression.get(0).toLowerCase().equals("real") && typeVar.toLowerCase().equals("real"))
-        {
-            stackExpression.clear();
-        }
-        else if (stackExpression.get(0).toLowerCase().equals("boolean") && typeVar.toLowerCase().equals("boolean"))
+        String firstType = stackExpression.get(0).toLowerCase();
+        String secondType = typeVar.toLowerCase();
+
+        if ((firstType.equals("integer") && secondType.equals("integer")) ||
+            (firstType.equals("boolean") && secondType.equals("boolean")) ||
+            (firstType.equals("real") && secondType.equals("integer")) ||
+            (firstType.equals("real") && secondType.equals("real"))
+            )
         {
             stackExpression.clear();
         }
         else
         {
-
             stackExpression.clear();
             throw new SemanticException("Error in assigning value to a variable!");
         }
@@ -242,12 +223,10 @@ public class TypeControl
      */
     public void printStack()
     {
-        int i = stackExpression.size() - 1;
         System.out.println("Stack:");
-        while (i >= 0)
+        for (int i = stackExpression.size() - 1; i >= 0; i--)
         {
             System.out.println(i + ": " + stackExpression.get(i));
-            i--;
         }
         System.out.println("\n\n");
     }
@@ -289,7 +268,7 @@ public class TypeControl
      * Put that will be a check of the arguments of a procedure with the input parameters if 'b' is true and
      * procedureSymbol is the procedure called.
      *
-     * @param b,              set true if is a procedure call and false if the procedure call is over.
+     * @param b set true if is a procedure call and false if the procedure call is over.
      * @param procedureSymbol the procedure called
      */
     public void setCallProcedure(boolean b, ProcedureSymbol procedureSymbol)
@@ -321,7 +300,6 @@ public class TypeControl
     /**
      * get the last type in the stack of expression
      *
-     * @param type in the last position
      */
     public String getFirstType()
     {
@@ -348,31 +326,21 @@ public class TypeControl
 
         if (procedureSymbol.getParametersSize() != procedureParametersStack.size())
         {
-
             throw new SemanticException("Parameters number error!");
-
         }
         else
         {
             for (int i = 0; i < procedureParametersStack.size(); i++)
             {
-                if (procedureParametersStack.get(i).toLowerCase().equals("integer") && procedureSymbol.getParameter(i).getType().equals("integer"))
-                {
+                String firstType = procedureParametersStack.get(i).toLowerCase();
+                String secondType = procedureSymbol.getParameter(i).getType();
 
-                }
-                else if (procedureParametersStack.get(i).toLowerCase().equals("integer") && procedureSymbol.getParameter(i).getType().equals("real"))
-                {
-
-                }
-                else if (procedureParametersStack.get(i).toLowerCase().equals("real") && procedureSymbol.getParameter(i).getType().equals("real"))
-                {
-
-                }
-                else if (procedureParametersStack.get(i).toLowerCase().equals("boolean") && procedureSymbol.getParameter(i).getType().equals("boolean"))
-                {
-
-                }
-                else
+                //if it's not a valid combination, throws an exception
+                if ( !(firstType.equals("boolean") && secondType.equals("boolean") ||
+                     firstType.equals("integer") && secondType.equals("integer") ||
+                     firstType.equals("integer") && secondType.equals("real") ||
+                     firstType.equals("real") && secondType.equals("real"))
+                     )
                 {
                     throw new SemanticException("Error in assigning value to parameter");
                 }

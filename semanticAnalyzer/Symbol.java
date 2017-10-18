@@ -41,7 +41,7 @@ public class Symbol
 	/*METHODS - GETTERS AND SETTERS*/
 
     /**
-     * Get a name of the identifier.
+     * Get the name of the identifier.
      *
      * @return String name of the identifier
      */
@@ -51,7 +51,7 @@ public class Symbol
     }
 
     /**
-     * Get a type of the identifier.
+     * Get the type of the identifier.
      *
      * @return String type of the identifier
      */
