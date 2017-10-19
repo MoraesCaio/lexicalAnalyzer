@@ -20,8 +20,7 @@ import java.util.List;
 public class SymbolTable
 {
     /*PROPERTIES*/
-    private final static String MARK = "$";
-    private final static String MARK_TYPE = "markType";
+    private final static String MARK = "$", MARK_TYPE = "markType";
     private List<Symbol> stack;
 
 

@@ -2,8 +2,6 @@ package syntaxAnalyzer;
 
 import lexicalAnalyzer.Token;
 import semanticAnalyzer.*;
-import semanticAnalyzer.SymbolTable;
-
 import java.util.ArrayList;
 
 /**
@@ -226,7 +224,7 @@ public class SyntaxAnalyzer
         //Checks whether the current identifier is declared here or elsewhere in the same scope
         if(symbolTable.hasDuplicateDeclaration(currentToken.getText()))
         {
-            semanticError("Duplicate identifier!");
+            semanticError("Found duplicate identifier!");
         }
 
 
@@ -555,10 +553,10 @@ public class SyntaxAnalyzer
             currentToken = getNextToken();
             if (currentToken.getText().equals(":="))
             {
-                typeControl.pushMark();
+                typeControl.pushParenthesis();
                 expression();
                 try{
-                    typeControl.popMark();
+                    typeControl.popParenthesis();
                     typeControl.verifyResult(resultClassification);
                 }catch (SemanticException e) {
                     semanticError(e.getMessage());
@@ -575,11 +573,11 @@ public class SyntaxAnalyzer
         else if (currentToken.getText().toLowerCase().equals("if"))
         {
             String resultClassification = "boolean";
-            typeControl.pushMark();
+            typeControl.pushParenthesis();
             expression();
 
             try{
-                typeControl.popMark();
+                typeControl.popParenthesis();
                 typeControl.verifyResult(resultClassification);
             }catch (SemanticException e) {
                 semanticError(e.getMessage());
@@ -599,10 +597,10 @@ public class SyntaxAnalyzer
         else if (currentToken.getText().toLowerCase().equals("while"))
         {
             String resultClassification = "boolean";
-            typeControl.pushMark();
+            typeControl.pushParenthesis();
             expression();
             try{
-                typeControl.popMark();
+                typeControl.popParenthesis();
                 typeControl.verifyResult(resultClassification);
             } catch (SemanticException e) {
                 semanticError(e.getMessage());
@@ -629,10 +627,10 @@ public class SyntaxAnalyzer
             }
 
             String resultClassification = "boolean";
-            typeControl.pushMark();
+            typeControl.pushParenthesis();
             expression();
             try{
-                typeControl.popMark();
+                typeControl.popParenthesis();
                 typeControl.verifyResult(resultClassification);
             } catch (SemanticException e) {
                 semanticError(e.getMessage());
@@ -702,7 +700,7 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier!");
         }
 
-        typeControl.setCallProcedure(true, symbolTable.getProcedure(currentToken.getText()));
+        typeControl.setProcedureCall(true, symbolTable.getProcedure(currentToken.getText()));
         currentToken = getNextToken();
         if (!currentToken.getText().equals("("))
         {
@@ -739,12 +737,12 @@ public class SyntaxAnalyzer
         else
         {
 
-            typeControl.pushMark();
+            typeControl.pushParenthesis();
             expression();
             try {
-                typeControl.popMark();
+                typeControl.popParenthesis();
 
-                if(typeControl.isCallProcedure()) {
+                if(typeControl.isProcedureCall()) {
                     typeControl.pushParameter(typeControl.getFirstType());
                     typeControl.reset();
                 }
@@ -782,13 +780,13 @@ public class SyntaxAnalyzer
             return;
         }
 
-        typeControl.pushMark();
+        typeControl.pushParenthesis();
         expression();
 
         try {
-            typeControl.popMark();
+            typeControl.popParenthesis();
 
-            if(typeControl.isCallProcedure()) {
+            if(typeControl.isProcedureCall()) {
                 typeControl.pushParameter(typeControl.getFirstType());
                 typeControl.reset();
             }
@@ -936,10 +934,10 @@ public class SyntaxAnalyzer
         }
         else if (currentToken.getText().equals("("))
         {
-            typeControl.pushMark();
+            typeControl.pushParenthesis();
             expression();
             try {
-                typeControl.popMark();
+                typeControl.popParenthesis();
             } catch (SemanticException e) {
                 semanticError(e.getMessage());
             }
