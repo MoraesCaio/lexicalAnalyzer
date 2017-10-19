@@ -16,9 +16,13 @@ import java.util.List;
  * GitHub: janyelson
  * Email: janyelsonvictor@gmail.com
  */
-public class ProcedureSymbol extends Symbol{
-
+public class ProcedureSymbol extends Symbol
+{
+    /*PROPERTIES*/
     private List<Symbol> parameters;
+
+
+    /*CONSTRUCTORS*/
     public ProcedureSymbol(String name)
     {
         super(name, "procedure");
@@ -27,15 +31,17 @@ public class ProcedureSymbol extends Symbol{
 
     public ProcedureSymbol()
     {
-        this("identifier");
+        this("No identifier specified");
     }
+
 
     /**
      * Take the amount of parameters.
      *
      * @return return amount of parameters.
      */
-    public int getParametersSize() {
+    public int getParametersSize()
+    {
         return parameters.size();
     }
 
@@ -45,7 +51,8 @@ public class ProcedureSymbol extends Symbol{
      * @param i position
      * @return return a name parameter.
      */
-    public Symbol getParamater(int i) {
+    public Symbol getParameter(int i)
+    {
         return parameters.get(i);
     }
 
@@ -58,7 +65,6 @@ public class ProcedureSymbol extends Symbol{
     {
         parameters.add(parameter);
     }
-
 
 
 }

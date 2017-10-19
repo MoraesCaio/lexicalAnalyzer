@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a class for types verification, which will store the ecpressions, separated in:
+ * This is a class for types verification, which will store the expressions, separated in:
  * 1- a stack for types, where each expression is divided using a tag, eg 1 + (2 + 3), in the stack it will be
- * [integer, MARK, integer, integer].
+ * [integer, PARENTHESIS, integer, integer].
  * 2- a stack for operations, which push when it reads an operation and pop when it has 2 types in sequence
  * in the type stack, eg 1 + (2 + 3), in the stack it will be [addition, addition]. when reading 3, the operation
  * is performed.
@@ -23,218 +23,231 @@ import java.util.List;
  * GitHub: janyelson
  * Email: janyelsonvictor@gmail.com
  */
-public class TypeControl 
+public class TypeControl
 {
-    private final static String MARK = "$";
-	private List<String> stackExpression;
-	private List<String> operationStack;
+    private final static String PARENTHESIS = "$", INT = "integer", REAL = "real", BOOLEAN = "boolean";
+    private List<String> expressionStack;
+    private List<String> operationStack;
     private List<String> procedureParametersStack;
 
-    private boolean callProcedure = false;
+    private boolean procedureCall = false;
     private ProcedureSymbol procedureSymbol;
 
+
+    /*CONSTRUCTOR*/
     public TypeControl()
     {
-		stackExpression = new ArrayList<String>();
-		operationStack = new ArrayList<String>();
-        procedureParametersStack = new ArrayList<>();
-	}
-
-    /**
-     * Push a MARK into the stack of expression. Represent a '(' in expression
-     *
-     */
-	public void pushMark() {
-	    stackExpression.add(MARK);
+        expressionStack = new ArrayList<String>();
+        operationStack = new ArrayList<String>();
+        procedureParametersStack = new ArrayList<String>();
     }
 
-    /**
-     * Pop a MARK into the stack of expression. Represent a ')' in expression
-     * Remove and store a type result of operation and remove  a MARK ('(')
-     * , and put the result type store in the stack.
-     * eg:
-     *  stackExpression: [integer, MARK, integer] -> [integer, integer]
-     *
-     */
-    public void popMark() throws SemanticException {
-        int i = stackExpression.size()-1;
-        String result = stackExpression.get(i);
 
-        stackExpression.remove(i);
-        stackExpression.remove(i-1);
+    /*METHODS*/
+    /**
+     * Push a PARENTHESIS into the stack of expression. Represent a '(' in expression
+     */
+    public void pushParenthesis()
+    {
+        expressionStack.add(PARENTHESIS);
+    }
+
+
+    /**
+     * Pop a PARENTHESIS into the stack of expression. Represent a ')' in expression
+     * Remove and store a type result of operation and remove a PARENTHESIS ('(')
+     *  and put the result type store in the stack.
+     * eg:
+     * expressionStack: [integer, PARENTHESIS, integer] -> [integer, integer]
+     */
+    public void popParenthesis() throws SemanticException
+    {
+        int i = expressionStack.size() - 1;
+        String result = expressionStack.get(i);
+
+        expressionStack.remove(i);
+        expressionStack.remove(i - 1);
 
         pushType(result);
-
     }
 
+
     /**
-     * Push a type into the stack of expression. If there two sequence type in the stack, do the operation
+     * Push a type into the stack of expression. If there is two sequence type in the stack, do the operation
      *
      * @param type type will be pushed
      */
-	public void pushType(String type) throws SemanticException {
-		stackExpression.add(type);
+    public void pushType(String type) throws SemanticException
+    {
+        expressionStack.add(type);
 
-		int i = stackExpression.size()-1;
-        if(i < 1) return;
-
-		int count = 0;
-
-        while (!stackExpression.get(i).equals(MARK)) {
-            count++;
-            i--;
+        int i = expressionStack.size() - 1;
+        if (i < 1)
+        {
+            return;
         }
 
-        int x1 = stackExpression.size()-1;
-        int x2 = x1-1;
-		if(count == 2) makeOperation(x1, x2);
-	}
+        //counting symbols until mark symbol
+        int count = 0;
+        for (; !expressionStack.get(i).equals(PARENTHESIS); i--, count++);
+
+        int x1 = expressionStack.size() - 1;
+        int x2 = x1 - 1;
+        if (count == 2)
+        {
+            doOperation(x1, x2);
+        }
+    }
 
     /**
      * Pop a type of the stack of expression
-     *
      */
-	public void popType()
+    public void popType()
     {
-		stackExpression.remove(stackExpression.size() -1);
-	}
+        expressionStack.remove(expressionStack.size() - 1);
+    }
+
 
     /**
      * Pop two type in sequence and push the result
      * eg:
-     *  stackExpression: [integer, MARK, integer integer] -> [integer, MARK, integer]
+     * expressionStack: [integer, PARENTHESIS, integer integer] -> [integer, PARENTHESIS, integer]
      *
      * @param typeResult type result
      */
-	public void refreshStack(String typeResult) throws SemanticException {
-		popType();
-		popType();
-		pushType(typeResult);
-	}
+    public void updateExpressionStack(String typeResult) throws SemanticException
+    {
+        popType();
+        popType();
+        pushType(typeResult);
+    }
 
 
     /**
-     * Make operation with two types in sequence and call refreshStack
+     * Make operation with two types in sequence and call updateExpressionStack
      *
-     * @param x1,x2 x1 for firt type and x2 second type in the stack of expression
+     * @param firstTypeIdx index of the first operand's type in the stack of expression
+     * @param secondTypeIdx index of the second operand's type in the stack of expression
      * @throws SemanticException for errors in type combination
      */
-	public void makeOperation(int x1, int x2) throws SemanticException {
-        if(stackExpression.get(x1).toLowerCase().equals("integer") && stackExpression.get(x2).toLowerCase().equals("integer")) {
-            if(!getLastOperation().equals("relational")) {
-                refreshStack("integer");
-            } else {
-                refreshStack("boolean");
+    public void doOperation(int firstTypeIdx, int secondTypeIdx) throws SemanticException
+    {
+        String firstType = expressionStack.get(firstTypeIdx).toLowerCase();
+        String secondType = expressionStack.get(secondTypeIdx).toLowerCase();
+
+        if (firstType.equals(INT) && secondType.equals(INT))
+        {
+            if (getLastOperation().equals("relational"))
+            {
+                updateExpressionStack(BOOLEAN);
+            }
+            else
+            {
+                updateExpressionStack(INT);
+            }
+        }
+        //real & int; int & real; real & real
+        else if ((firstType.equals(INT) && secondType.equals(REAL)) ||
+                 (firstType.equals(REAL) && secondType.equals(INT)) ||
+                 (firstType.equals(REAL) && secondType.equals(REAL))
+                 )
+        {
+            if (getLastOperation().equals("relational"))
+            {
+                updateExpressionStack(BOOLEAN);
+            }
+            else
+            {
+                updateExpressionStack(REAL);
+            }
+        }
+        //boolean & boolean
+        else if (firstType.equals(BOOLEAN) && secondType.equals(BOOLEAN))
+        {
+            if (!getLastOperation().equals("relational"))
+            {
+                throw new SemanticException("Error: expected boolean and boolean operands.");
             }
 
-            popOperation();
+            updateExpressionStack(BOOLEAN);
         }
-        else if(stackExpression.get(x1).toLowerCase().equals("integer") && stackExpression.get(x2).toLowerCase().equals("real")) {
-            if(!getLastOperation().equals("relational")) {
-                refreshStack("real");
-            } else {
-                refreshStack("boolean");
-            }
-            popOperation();
-        }
-        else if(stackExpression.get(x1).toLowerCase().equals("real") && stackExpression.get(x2).toLowerCase().equals("integer")) {
-            if(!getLastOperation().equals("relational")) {
-                refreshStack("real");
-            } else {
-                refreshStack("boolean");
-            }
-            popOperation();
-        }
-        else if(stackExpression.get(x1).toLowerCase().equals("real") && stackExpression.get(2).toLowerCase().equals("real")) {
-            if(!getLastOperation().equals("relational")) {
-                refreshStack("real");
-            } else {
-                refreshStack("boolean");
-            }
-            popOperation();
-        }
-        else if(stackExpression.get(x1).toLowerCase().equals("boolean") && stackExpression.get(x2).toLowerCase().equals("boolean")) {
-            if(getLastOperation().equals("relational")) {
-                refreshStack("boolean");
-            }
-            else {
-                throw new SemanticException("Error in operation");
-            }
-            popOperation();
-        }
-        else {
-            popOperation();
+        else
+        {
             throw new SemanticException("Error in types combination!");
         }
+        popOperation();
     }
 
     /**
      * Verify result, comparing the last element int the stack with the expected result of the entire expression.
      *
-     * @param typeVar, expected result.
+     * @param typeVar expected result.
      */
-	public void verifyResult(String typeVar) throws SemanticException {
-        if(stackExpression.get(0).toLowerCase().equals("integer") && typeVar.toLowerCase().equals("integer")) {
-            stackExpression.clear();
-        }
-        else if(stackExpression.get(0).toLowerCase().equals("integer") && typeVar.toLowerCase().equals("real")) {
-            stackExpression.clear();
-        }
-        else if(stackExpression.get(0).toLowerCase().equals("real") && typeVar.toLowerCase().equals("real")) {
-            stackExpression.clear();
-        }
-        else if(stackExpression.get(0).toLowerCase().equals("boolean") && typeVar.toLowerCase().equals("boolean")) {
-            stackExpression.clear();
-        }
-        else {
+    public void verifyResult(String typeVar) throws SemanticException
+    {
+        String resultType = expressionStack.get(0).toLowerCase();
+        String variableType = typeVar.toLowerCase();
 
-            stackExpression.clear();
-            throw new SemanticException("Error in assigning value to a variable!");
+        if ((variableType.equals(INT) && resultType.equals(INT)) ||
+            (variableType.equals(BOOLEAN) && resultType.equals(BOOLEAN)) ||
+            (variableType.equals(REAL) && resultType.equals(INT)) ||
+            (variableType.equals(REAL) && resultType.equals(REAL))
+            )
+        {
+            expressionStack.clear();
+        }
+        else
+        {
+            expressionStack.clear();
+            throw new SemanticException("Error while assigning value to a variable!");
         }
     }
 
+
     /**
-     * Remove all types in the stackExpression the stack.
-     *
+     * Remove all types in the expressionStack the stack.
      */
     public void reset()
     {
-        stackExpression.clear();
+        expressionStack.clear();
     }
+
 
     /**
      * Print all elements in the stack of expression in order
-     *
      */
-    public void printStack() {
-	    int i = stackExpression.size() - 1;
+    public void printStack()
+    {
         System.out.println("Stack:");
-	    while(i >= 0) {
-            System.out.println(i + ": " + stackExpression.get(i));
-            i--;
+        for (int i = expressionStack.size() - 1; i >= 0; i--)
+        {
+            System.out.println(i + ": " + expressionStack.get(i));
         }
         System.out.println("\n\n");
     }
 
+
     /**
      * Push operation in the stack of operation
      * eg:
-     *  stackOperation: [addition] -> [addition, relational]
+     * stackOperation: [addition] -> [addition, relational]
      *
      * @param operation opetarion will be pushed
      */
-    public void pushOperation(String operation) {
-	    this.operationStack.add(operation);
+    public void pushOperation(String operation)
+    {
+        this.operationStack.add(operation);
     }
+
 
     /**
      * Pop operation in the stack of operation
      * eg:
-     *  stackOperation: [addition, relational] -> [addition]
-     *
+     * stackOperation: [addition, relational] -> [addition]
      */
-    public void popOperation() {
-	    operationStack.remove(operationStack.size()-1);
+    public void popOperation()
+    {
+        operationStack.remove(operationStack.size() - 1);
     }
 
 
@@ -243,86 +256,93 @@ public class TypeControl
      *
      * @return operation
      */
-    public String getLastOperation() {
-	    return operationStack.get(operationStack.size()-1);
+    public String getLastOperation()
+    {
+        return operationStack.get(operationStack.size() - 1);
     }
 
     /**
      * Put that will be a check of the arguments of a procedure with the input parameters if 'b' is true and
      * procedureSymbol is the procedure called.
      *
-     * @param b, set true if is a procedure call and false if the procedure call is over.
+     * @param b set true if is a procedure call and false if the procedure call is over.
      * @param procedureSymbol the procedure called
      */
-    public void setCallProcedure(boolean b, ProcedureSymbol procedureSymbol) {
-	    callProcedure = b;
-	    this.procedureSymbol = procedureSymbol;
+    public void setProcedureCall(boolean b, ProcedureSymbol procedureSymbol)
+    {
+        procedureCall = b;
+        this.procedureSymbol = procedureSymbol;
     }
+
 
     /**
      * Verify if is a procedure call.
      *
-     * @return callProcedure value.
+     * @return procedureCall value.
      */
-    public boolean isCallProcedure() {
-        return callProcedure;
+    public boolean isProcedureCall()
+    {
+        return procedureCall;
     }
+
 
     /**
      * Add a result of a expression in the stack of procedure parameters.
      *
      * @param type, type will be pushed
      */
-    public void pushParameter(String type) {
+    public void pushParameter(String type)
+    {
         procedureParametersStack.add(type);
     }
+
 
     /**
      * get the last type in the stack of expression
      *
-     * @param type in the last position
      */
-    public String getFirstType() {
-        return stackExpression.get(0);
+    public String getFirstType()
+    {
+        return expressionStack.get(0);
     }
+
 
     /**
      * If is not anymore a call procedure.
-     *
      */
-    public void resetProcedureControl() {
+    public void resetProcedureControl()
+    {
         procedureParametersStack.clear();
-        stackExpression.clear();
-        setCallProcedure(false, null);
+        expressionStack.clear();
+        setProcedureCall(false, null);
     }
 
 
     /**
      * Only for procedure calls. Verify result, comparing all elements in the procedureParametersStack
      * with all procedure parameters.
-     *
      */
-    public void verifyResultProcedureCall() throws SemanticException {
+    public void verifyResultProcedureCall() throws SemanticException
+    {
 
-        if(procedureSymbol.getParametersSize() !=  procedureParametersStack.size())
+        if (procedureSymbol.getParametersSize() != procedureParametersStack.size())
         {
-
             throw new SemanticException("Parameters number error!");
+        }
 
-        } else
+        for (int i = 0; i < procedureParametersStack.size(); i++)
         {
-            for (int i = 0; i < procedureParametersStack.size(); i++) {
-                if (procedureParametersStack.get(i).toLowerCase().equals("integer") && procedureSymbol.getParamater(i).getType().equals("integer")) {
+            String resultType = procedureParametersStack.get(i).toLowerCase();
+            String parameterType = procedureSymbol.getParameter(i).getType().toLowerCase();
 
-                } else if (procedureParametersStack.get(i).toLowerCase().equals("integer") && procedureSymbol.getParamater(i).getType().equals("real")) {
-
-                } else if (procedureParametersStack.get(i).toLowerCase().equals("real") && procedureSymbol.getParamater(i).getType().equals("real")) {
-
-                }else if (procedureParametersStack.get(i).toLowerCase().equals("boolean") && procedureSymbol.getParamater(i).getType().equals("boolean")) {
-
-                } else {
-                    throw new SemanticException("Error in assigning value to parameter");
-                }
+            //if it's not a valid combination, throws an exception
+            if ( !(parameterType.equals(BOOLEAN) && resultType.equals(BOOLEAN) ||
+                    parameterType.equals(INT) && resultType.equals(INT) ||
+                    parameterType.equals(REAL) && resultType.equals(INT) ||
+                    parameterType.equals(REAL) && resultType.equals(REAL))
+                    )
+            {
+                throw new SemanticException("Error in assigning value to parameter");
             }
         }
 

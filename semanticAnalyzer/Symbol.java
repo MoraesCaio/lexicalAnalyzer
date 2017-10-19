@@ -1,7 +1,7 @@
 package semanticAnalyzer;
 
 /**
- * This is a class for represent symbols (identifiers) with its name and type.
+ * This is a class for symbols (identifiers) defines its name and type.
  * <p>
  * Created on 14/10/17 by
  * <p>
@@ -15,46 +15,58 @@ package semanticAnalyzer;
  */
 public class Symbol
 {
-	private String name;
-	private String type;
+    /*PROPERTIES*/
+    private String name;
+    private String type;
 
-	public Symbol(String name, String type) {
-		this.name = name;
-		this.type = type;
-	}
 
-	public Symbol(String name) {
-		this(name, "void");
-	}
+    /*CONSTRUCTORS*/
+    public Symbol(String name, String type)
+    {
+        this.name = name;
+        this.type = type;
+    }
 
-	public Symbol() {
-		this("identifier", "void");
-	}
+    public Symbol(String name)
+    {
+        this(name, "void");
+    }
 
-	/**
-	 * Get a name of identifier.
-	 *
-	 * @return name of identifier
-	 */
-	public String getName() {
-		return this.name;
-	}
+    public Symbol()
+    {
+        this("No identifier specified");
+    }
 
-	/**
-	 * Get a type of identifier.
-	 *
-	 * @return type of identifier
-	 */
-	public String getType() {
-		return this.type;
-	}
 
-	/**
-	 * Add a type to the identifier.
-	 *
-	 * @param type will be add to identifier
-	 */
-	public void setType(String type){
-		this.type = type;
-	}
- }
+	/*METHODS - GETTERS AND SETTERS*/
+
+    /**
+     * Get the name of the identifier.
+     *
+     * @return String name of the identifier
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * Get the type of the identifier.
+     *
+     * @return String type of the identifier
+     */
+    public String getType()
+    {
+        return type;
+    }
+
+    /**
+     * Set the type of the identifier.
+     *
+     * @param type String type of the identifier
+     */
+    public void setType(String type)
+    {
+        this.type = type;
+    }
+}

@@ -2,8 +2,6 @@ package syntaxAnalyzer;
 
 import lexicalAnalyzer.Token;
 import semanticAnalyzer.*;
-import semanticAnalyzer.SymbolsTable;
-
 import java.util.ArrayList;
 
 /**
@@ -31,7 +29,7 @@ public class SyntaxAnalyzer
     private boolean DEBUG_MODE;
 
     /*SEMANTIC ANALYZER*/
-    private SymbolsTable symbolsTable;
+    private SymbolTable symbolTable;
     private TypeControl typeControl;
 
     /**
@@ -43,7 +41,7 @@ public class SyntaxAnalyzer
     {
         this.tokens = tokens;
         this.DEBUG_MODE = DEBUG_MODE;
-        this.symbolsTable = new SymbolsTable();
+        this.symbolTable = new SymbolTable();
         this.typeControl = new TypeControl();
     }
 
@@ -90,7 +88,7 @@ public class SyntaxAnalyzer
         }
 
         //enter into global scope
-        symbolsTable.enterScope();
+        symbolTable.enterScope();
 
         //identifier: name of the program
         currentToken = getNextToken();
@@ -99,7 +97,7 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier for program!");
         }
 
-        symbolsTable.addSymbol(new Symbol(currentToken.getText(), "program"));
+        symbolTable.addSymbol(new Symbol(currentToken.getText(), "program"));
 
         //identifier: ';'
         currentToken = getNextToken();
@@ -114,7 +112,7 @@ public class SyntaxAnalyzer
         compoundCommand();
 
         //exit scope
-        symbolsTable.exitScope();
+        symbolTable.exitScope();
 
         //delimiter: '.'
         currentToken = getNextToken();
@@ -222,16 +220,16 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier!");
         }
 
-        if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
-        //Checks whether the current identifier is declared elsewhere in the same scope
-        if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
+        if(symbolTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
+        //Checks whether the current identifier is declared here or elsewhere in the same scope
+        if(symbolTable.hasDuplicateDeclaration(currentToken.getText()))
         {
-            semanticError("Duplicate identifier!");
+            semanticError("Found duplicate identifier!");
         }
 
 
         //If not, put the identifier into stack
-        symbolsTable.addSymbol(new Symbol(currentToken.getText()));
+        symbolTable.addSymbol(new Symbol(currentToken.getText()));
 
         identifiersListB();
     }
@@ -256,16 +254,16 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier!");
         }
 
-        if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
+        if(symbolTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
         //Checks whether the current identifier is declared elsewhere in the same scope
-        if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
+        if(symbolTable.hasDuplicateDeclaration(currentToken.getText()))
         {
             semanticError("Duplicate identifier!");
         }
 
 
         //If not, put the identifier into stack
-        symbolsTable.addSymbol(new Symbol(currentToken.getText()));
+        symbolTable.addSymbol(new Symbol(currentToken.getText()));
 
         identifiersListB();
     }
@@ -284,7 +282,7 @@ public class SyntaxAnalyzer
             syntaxError("Invalid type!");
         }
 
-        symbolsTable.assignType(currentToken.getText());
+        symbolTable.assignType(currentToken.getText());
 
     }
 
@@ -336,19 +334,19 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier!");
         }
 
-        if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
+        if(symbolTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Identifier has the same program name");
         //Checks whether the current identifier is declared elsewhere in the same scope
-        if(symbolsTable.searchDuplicateDeclaration(currentToken.getText()))
+        if(symbolTable.hasDuplicateDeclaration(currentToken.getText()))
         {
             semanticError("Duplicate identifier!");
         }
 
 
         //If not, put the identifier into stack
-        symbolsTable.addSymbol(new ProcedureSymbol(currentToken.getText()));
+        symbolTable.addSymbol(new ProcedureSymbol(currentToken.getText()));
 
         //enter into local scope
-        symbolsTable.enterScope();
+        symbolTable.enterScope();
 
         arguments();
 
@@ -364,7 +362,7 @@ public class SyntaxAnalyzer
         compoundCommand();
 
         //exit scope
-        symbolsTable.exitScope();
+        symbolTable.exitScope();
 
         currentToken = getNextToken();
         if (!currentToken.getText().equals(";"))
@@ -428,7 +426,7 @@ public class SyntaxAnalyzer
         if (!currentToken.getText().equals(";"))
         {
             count--;
-            symbolsTable.assignParameters();
+            symbolTable.assignParameters();
             return;
         }
 
@@ -515,15 +513,11 @@ public class SyntaxAnalyzer
         if (currentToken.getText().equals(";"))
         {
             currentToken = getNextToken();
+            count--;
             if (!currentToken.getText().toLowerCase().equals("end"))
             {
-                count--;
                 command();
                 commandListB();
-            }
-            else
-            {
-                count--;
             }
         }
         else
@@ -546,23 +540,23 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if (currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
-            if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase().toLowerCase())) semanticError("Program name cannot be used");
+            if(symbolTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase().toLowerCase())) semanticError("Program name cannot be used");
             //Checks whether the current identifier is declared elsewhere
-            if(!symbolsTable.searchIdentifier(currentToken.getText()))
+            if(!symbolTable.hasIdentifier(currentToken.getText()))
             {
                 semanticError("Using not declared identifier!");
             }
 
 
-            String resultClassification = symbolsTable.getType(currentToken.getText());
+            String resultClassification = symbolTable.getType(currentToken.getText());
 
             currentToken = getNextToken();
             if (currentToken.getText().equals(":="))
             {
-                typeControl.pushMark();
+                typeControl.pushParenthesis();
                 expression();
                 try{
-                    typeControl.popMark();
+                    typeControl.popParenthesis();
                     typeControl.verifyResult(resultClassification);
                 }catch (SemanticException e) {
                     semanticError(e.getMessage());
@@ -579,11 +573,11 @@ public class SyntaxAnalyzer
         else if (currentToken.getText().toLowerCase().equals("if"))
         {
             String resultClassification = "boolean";
-            typeControl.pushMark();
+            typeControl.pushParenthesis();
             expression();
 
             try{
-                typeControl.popMark();
+                typeControl.popParenthesis();
                 typeControl.verifyResult(resultClassification);
             }catch (SemanticException e) {
                 semanticError(e.getMessage());
@@ -603,10 +597,10 @@ public class SyntaxAnalyzer
         else if (currentToken.getText().toLowerCase().equals("while"))
         {
             String resultClassification = "boolean";
-            typeControl.pushMark();
+            typeControl.pushParenthesis();
             expression();
             try{
-                typeControl.popMark();
+                typeControl.popParenthesis();
                 typeControl.verifyResult(resultClassification);
             } catch (SemanticException e) {
                 semanticError(e.getMessage());
@@ -633,10 +627,10 @@ public class SyntaxAnalyzer
             }
 
             String resultClassification = "boolean";
-            typeControl.pushMark();
+            typeControl.pushParenthesis();
             expression();
             try{
-                typeControl.popMark();
+                typeControl.popParenthesis();
                 typeControl.verifyResult(resultClassification);
             } catch (SemanticException e) {
                 semanticError(e.getMessage());
@@ -659,7 +653,8 @@ public class SyntaxAnalyzer
     /**
      * command | compoundCommand
      *
-     * @throws SyntaxException
+     * @throws SyntaxException For more information on the error, use getMessage()
+     * @throws SemanticException For more information on the error, use getMessage()
      */
     private void commandStructure() throws SyntaxException, SemanticException {
         currentToken = getNextToken();
@@ -705,7 +700,7 @@ public class SyntaxAnalyzer
             syntaxError("Invalid identifier!");
         }
 
-        typeControl.setCallProcedure(true, symbolsTable.getProcedure(currentToken.getText()));
+        typeControl.setProcedureCall(true, symbolTable.getProcedure(currentToken.getText()));
         currentToken = getNextToken();
         if (!currentToken.getText().equals("("))
         {
@@ -742,12 +737,12 @@ public class SyntaxAnalyzer
         else
         {
 
-            typeControl.pushMark();
+            typeControl.pushParenthesis();
             expression();
             try {
-                typeControl.popMark();
+                typeControl.popParenthesis();
 
-                if(typeControl.isCallProcedure()) {
+                if(typeControl.isProcedureCall()) {
                     typeControl.pushParameter(typeControl.getFirstType());
                     typeControl.reset();
                 }
@@ -785,13 +780,13 @@ public class SyntaxAnalyzer
             return;
         }
 
-        typeControl.pushMark();
+        typeControl.pushParenthesis();
         expression();
 
         try {
-            typeControl.popMark();
+            typeControl.popParenthesis();
 
-            if(typeControl.isCallProcedure()) {
+            if(typeControl.isProcedureCall()) {
                 typeControl.pushParameter(typeControl.getFirstType());
                 typeControl.reset();
             }
@@ -914,16 +909,16 @@ public class SyntaxAnalyzer
         currentToken = getNextToken();
         if (currentToken.getClassification().equals(Token.Classifications.IDENTIFIER.toString()))
         {
-            if(symbolsTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Program name cannot be used");
+            if(symbolTable.getProgramName().toLowerCase().equals(currentToken.getText().toLowerCase())) semanticError("Program name cannot be used");
             //Checks whether the current identifier is declared elsewhere
-            if(!symbolsTable.searchIdentifier(currentToken.getText()))
+            if(!symbolTable.hasIdentifier(currentToken.getText()))
             {
                 semanticError("Using not declared identifier!");
             }
 
 
             try {
-                typeControl.pushType(symbolsTable.getType(currentToken.getText()));
+                typeControl.pushType(symbolTable.getType(currentToken.getText()));
             } catch (SemanticException e) {
                 semanticError(e.getMessage());
 
@@ -939,10 +934,10 @@ public class SyntaxAnalyzer
         }
         else if (currentToken.getText().equals("("))
         {
-            typeControl.pushMark();
+            typeControl.pushParenthesis();
             expression();
             try {
-                typeControl.popMark();
+                typeControl.popParenthesis();
             } catch (SemanticException e) {
                 semanticError(e.getMessage());
             }
